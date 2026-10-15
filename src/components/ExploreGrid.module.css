@@ -1,0 +1,61 @@
+.section {
+    margin-top: 4rem;
+  }
+  
+  .heading {
+    color: var(--cream);
+    text-shadow: 3px 3px 0 var(--ink);
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    margin-bottom: 1.75rem;
+  }
+  
+  .grid {
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+  
+  .card {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .card:nth-child(odd) {
+    transform: rotate(-1.5deg);
+  }
+  
+  .card:nth-child(even) {
+    transform: rotate(1.5deg);
+  }
+  
+  .card:hover {
+    transform: rotate(0) translateY(-4px);
+    box-shadow: 9px 9px 0 var(--ink);
+  }
+  
+  .num {
+    font-family: var(--font-script);
+    font-size: 1.6rem;
+    color: var(--red);
+    line-height: 1;
+  }
+  
+  .card h3 {
+    font-size: 1.6rem;
+  }
+  
+  .more {
+    margin-top: 0.5rem;
+    font-weight: 800;
+    text-decoration: underline wavy var(--red);
+    text-underline-offset: 4px;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      transition: none;
+    }
+  }
