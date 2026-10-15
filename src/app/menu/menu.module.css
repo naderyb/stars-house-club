@@ -1,0 +1,71 @@
+.page {
+  padding-block: 2.5rem 1rem;
+}
+
+/* the flyer: cream sheet inside a thick red rounded border */
+.sheet {
+  background: var(--cream);
+  border: 12px solid var(--red);
+  outline: 3px solid var(--ink);
+  border-radius: 36px;
+  box-shadow: 8px 8px 0 var(--ink);
+  padding: clamp(1.25rem, 4vw, 2.75rem);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.8rem;
+}
+
+.jump a {
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+}
+
+.note {
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble-soft);
+  padding: 0.7rem 1rem;
+  transform: rotate(-0.6deg);
+}
+
+.grid {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.ppl {
+  width: 110px;
+  height: auto;
+}
+
+.end {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.end hr {
+  flex: 1;
+  border: 0;
+  border-top: 4px solid var(--periwinkle);
+  border-radius: 4px;
+}
+
+@media (min-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem 4rem;
+  }
+
+  /* sections marked `wide` in menu.ts span both columns */
+  .grid > section[class*="wide"] {
+    grid-column: 1 / -1;
+  }
+}
