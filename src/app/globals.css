@@ -1,0 +1,129 @@
+:root {
+  /* Brand palette (taken from the VI) */
+  --denim: #0f2347;
+  --denim-deep: #0a1833;
+  --red: #b00000;
+  --red-dark: #7a0a0a;
+  --cream: #f7efd9;
+  --yellow: #ffd97a;
+  --periwinkle: #6f8fe0;
+  --ink: #111111;
+
+  /* Typography */
+  --font-display: var(--font-bagel), "Arial Black", sans-serif;
+  --font-script: var(--font-caveat), cursive;
+  --font-body: var(--font-montserrat), system-ui, sans-serif;
+
+  /* Sketchbook feel */
+  --wobble: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --wobble-soft: 18px 6px 20px 8px / 8px 20px 6px 18px;
+  --hard-shadow: 6px 6px 0 var(--ink);
+
+  --container: 1100px;
+  --space: clamp(1rem, 3vw, 2rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background-color: var(--denim); /* fallback while the image loads */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fixed background layer. Better than background-attachment: fixed,
+   which is janky on iOS Safari. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--denim) url("/images/denim.webp") center / cover no-repeat;
+}
+
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.container {
+  width: min(100% - 2 * var(--space), var(--container));
+  margin-inline: auto;
+}
+
+/* Cream "paper" card, the core sketchbook building block */
+.paper {
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble-soft);
+  box-shadow: var(--hard-shadow);
+  padding: var(--space);
+}
+
+/* Handwritten accent text */
+.script {
+  font-family: var(--font-script);
+  font-size: 1.4em;
+}
+
+/* Sketchy button */
+.btn {
+  display: inline-block;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  text-decoration: none;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble);
+  padding: 0.7rem 1.4rem;
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.btn--red {
+  background: var(--red);
+  color: var(--cream);
+}
+
+:focus-visible {
+  outline: 3px dashed var(--yellow);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .btn { transition: none; }
+}
