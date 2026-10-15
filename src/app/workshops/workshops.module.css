@@ -1,0 +1,26 @@
+.page {
+    padding-block: 2.5rem 1rem;
+    display: grid;
+    gap: 2rem;
+  }
+  
+  .intro {
+    max-width: 640px;
+    transform: rotate(-0.8deg);
+  }
+  
+  .host {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    transform: rotate(0.8deg);
+  }
+  
+  .hostTitle {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
