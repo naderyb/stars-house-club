@@ -1,0 +1,5 @@
+.page {
+    padding-block: 2.5rem 1rem;
+    display: grid;
+    gap: 2rem;
+  }

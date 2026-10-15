@@ -1,0 +1,261 @@
+.form {
+    display: grid;
+    gap: 1.25rem;
+  }
+  
+  .title {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  /* ---------- fields ---------- */
+  .field {
+    display: grid;
+    gap: 0.35rem;
+  }
+  
+  .label {
+    font: 800 0.95rem var(--font-body);
+  }
+  
+  .optional {
+    font-weight: 600;
+    opacity: 0.65;
+  }
+  
+  .hint {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    opacity: 0.75;
+  }
+  
+  /* 16px minimum so iPhones don't zoom in when the field gets focus */
+  .input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.9rem;
+    font: 500 16px var(--font-body);
+    color: var(--ink);
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+  }
+  
+  textarea.input {
+    resize: vertical;
+    line-height: 1.5;
+  }
+  
+  .input:focus-visible {
+    outline: 3px dashed var(--red);
+    outline-offset: 2px;
+  }
+  
+  .input[aria-invalid="true"] {
+    border-color: var(--red);
+    background: #fff4f4;
+  }
+  
+  .input:disabled {
+    opacity: 0.6;
+  }
+  
+  .select {
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%),
+      linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+  }
+  
+  .prefix {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .prefix span {
+    font: 800 1.3rem var(--font-body);
+  }
+  
+  .error {
+    font: 800 0.82rem var(--font-body);
+    color: var(--red);
+    animation: shake 0.3s ease;
+  }
+  
+  .reveal {
+    animation: slideUp 0.3s ease;
+  }
+  
+  /* ---------- word meter ---------- */
+  .meter {
+    height: 8px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: #fff;
+    overflow: hidden;
+  }
+  
+  .meter span {
+    display: block;
+    height: 100%;
+    background: var(--yellow);
+    transition: width 0.2s ease;
+  }
+  
+  .meter span[data-done="true"] {
+    background: #1f9d55;
+  }
+  
+  .count {
+    font: 700 0.78rem var(--font-body);
+    text-align: right;
+  }
+  
+  /* ---------- "not an artist?" note ---------- */
+  .notice {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    padding: 0.8rem 1rem;
+    transform: rotate(-0.8deg);
+  }
+  
+  .noticeText {
+    font-size: 1.5rem;
+    line-height: 1.05;
+  }
+  
+  .noticeBtn {
+    min-height: 44px;
+    padding: 0 1rem;
+    font: 800 0.85rem var(--font-body);
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .noticeBtn:active {
+    transform: scale(0.96);
+  }
+  
+  /* ---------- consent ---------- */
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    cursor: pointer;
+  }
+  
+  .check input {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin-top: 0.1rem;
+    accent-color: var(--red);
+  }
+  
+  /* ---------- honeypot ---------- */
+  .trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  
+  /* ---------- submit ---------- */
+  .serverError {
+    font: 800 0.9rem var(--font-body);
+    background: #ffd0d0;
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    padding: 0.7rem 1rem;
+  }
+  
+  .submit {
+    width: 100%;
+    min-height: 56px;
+    font-size: 1.1rem;
+  }
+  
+  .submit:disabled {
+    opacity: 0.7;
+    cursor: progress;
+  }
+  
+  .wait {
+    text-align: center;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+  
+  /* ---------- success ---------- */
+  .success {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    transform: rotate(-0.6deg);
+    animation: slideUp 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  
+  .successTitle {
+    font-size: clamp(1.7rem, 6vw, 2.4rem);
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  .success .script {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
+  @keyframes shake {
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .error,
+    .reveal,
+    .success {
+      animation: none;
+    }
+    .meter span {
+      transition: none;
+    }
+  }

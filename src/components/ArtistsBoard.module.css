@@ -1,0 +1,114 @@
+.board {
+    display: grid;
+    gap: 1.75rem;
+  }
+  
+  /* tabs scroll sideways on tiny phones instead of squeezing */
+  .tabs {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0.25rem var(--space) 0.6rem;
+    margin-inline: calc(var(--space) * -1);
+  }
+  
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tab {
+    flex-shrink: 0;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1.2rem;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    background: var(--cream);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .tab span {
+    display: grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.3rem;
+    border-radius: 999px;
+    background: var(--yellow);
+    color: var(--ink);
+    font: 800 0.8rem var(--font-body);
+  }
+  
+  .tab[aria-selected="true"] {
+    background: var(--red);
+    color: var(--cream);
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  
+  .tab:active {
+    transform: scale(0.96);
+  }
+  
+  /* two polaroids per row on phones */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 1.75rem 1rem;
+    padding-top: 0.5rem;
+  }
+  
+  @media (min-width: 700px) {
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 2rem 1.5rem;
+    }
+  }
+  
+  .item:nth-child(3n + 1) > * {
+    transform: rotate(-1.5deg);
+  }
+  
+  .item:nth-child(3n + 2) > * {
+    transform: rotate(1.2deg);
+  }
+  
+  .item:nth-child(3n) > * {
+    transform: rotate(-0.6deg);
+  }
+  
+  .empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    max-width: 460px;
+    transform: rotate(-0.8deg);
+  }
+  
+  .empty :global(.script) {
+    font-size: 1.6rem;
+    line-height: 1.1;
+  }
+  
+  @media (hover: hover) {
+    .tab[aria-selected="false"]:hover {
+      background: var(--yellow);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .tab {
+      transition: none;
+    }
+  }

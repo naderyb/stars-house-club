@@ -1,0 +1,139 @@
+.wrap {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 760px;
+  }
+  
+  .controls {
+    display: grid;
+    gap: 0.75rem;
+  }
+  
+  .search {
+    width: 100%;
+    min-height: 52px;
+    padding: 0.7rem 1rem;
+    font: 600 16px var(--font-body);
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  .search:focus-visible {
+    outline: 3px dashed var(--red);
+    outline-offset: 2px;
+  }
+  
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .chip {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    font: 700 0.85rem var(--font-body);
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .chip span {
+    display: grid;
+    place-items: center;
+    min-width: 1.4rem;
+    height: 1.4rem;
+    padding: 0 0.3rem;
+    border-radius: 999px;
+    background: var(--yellow);
+    font: 800 0.75rem var(--font-body);
+  }
+  
+  .chip[aria-pressed="true"] {
+    background: var(--yellow);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  .reminder {
+    font-size: 0.85rem;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    padding: 0.6rem 1rem;
+    transform: rotate(-0.4deg);
+  }
+  
+  .count {
+    color: var(--cream);
+    font: 800 0.85rem var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  
+  .list {
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+  }
+  
+  /* the colored left edge says it at a glance */
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.8rem 0.7rem 1rem;
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    border-left-width: 12px;
+    border-radius: 12px;
+  }
+  
+  .row[data-status="accepted"] {
+    border-left-color: #1f9d55;
+  }
+  
+  .row[data-status="pending"] {
+    border-left-color: #e0a800;
+  }
+  
+  .row[data-status="rejected"] {
+    border-left-color: var(--red);
+  }
+  
+  .who {
+    min-width: 0;
+    display: grid;
+    line-height: 1.25;
+  }
+  
+  .name {
+    font-size: 1.05rem;
+    overflow-wrap: anywhere;
+  }
+  
+  .stage,
+  .contact {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    overflow-wrap: anywhere;
+  }
+  
+  .badges {
+    flex-shrink: 0;
+    display: grid;
+    justify-items: end;
+    gap: 0.3rem;
+  }
+  
+  .empty {
+    max-width: 320px;
+    text-align: center;
+  }

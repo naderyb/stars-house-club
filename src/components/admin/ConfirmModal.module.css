@@ -1,0 +1,59 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(20 16 16 / 70%);
+}
+
+.modal {
+  width: min(100%, 440px);
+  padding: 1.25rem;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble-soft);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.modal h2 {
+  margin: 0;
+  color: var(--red);
+  font: 400 1.5rem var(--font-display);
+}
+
+.modal p {
+  margin: 0.7rem 0 1.1rem;
+  font-size: 0.95rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.actions button {
+  min-height: 44px;
+  padding: 0 1rem;
+  font: 800 0.82rem var(--font-body);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.cancel {
+  background: #fff;
+}
+
+.confirm {
+  color: var(--cream);
+  background: var(--red);
+}
+
+.actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}

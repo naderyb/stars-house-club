@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { formatPrice } from "@/data/menu";
 import {
-  workshops,
   workshopsNote,
   type Workshop,
   type WorkshopOption,
@@ -14,7 +13,11 @@ import styles from "./WorkshopBooking.module.css";
 
 const MAX_QTY = 9;
 
-export default function WorkshopBooking() {
+interface WorkshopBookingProps {
+  workshops: Workshop[];
+}
+
+export default function WorkshopBooking({ workshops }: WorkshopBookingProps) {
   const [qty, setQty] = useState<Record<string, number>>({});
 
   const change = (
@@ -56,7 +59,7 @@ export default function WorkshopBooking() {
             qty: qty[o.id],
           })),
       ),
-    [qty],
+    [qty, workshops],
   );
 
   const count = lines.reduce((sum, l) => sum + l.qty, 0);
@@ -117,7 +120,7 @@ export default function WorkshopBooking() {
                         </span>
                         {locked && (
                           <span className={styles.hint}>
-                            pick a clay size first
+                            pick an option first
                           </span>
                         )}
                       </div>

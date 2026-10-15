@@ -1,0 +1,64 @@
+.page {
+    padding-block: 2.5rem 1rem;
+    display: grid;
+    gap: 3rem;
+  }
+  
+  /* ---------- intro ---------- */
+  .intro {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 700px;
+    transform: rotate(0.8deg);
+  }
+  
+  .lead {
+    font-size: clamp(1.5rem, 4.5vw, 2rem);
+    line-height: 1.2;
+  }
+  
+  /* ---------- community ---------- */
+  .section {
+    display: grid;
+    gap: 1.25rem;
+  }
+  
+  .sectionTitle {
+    font-size: clamp(2rem, 7vw, 3.2rem);
+    color: var(--cream);
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  /* ---------- host your art ---------- */
+  .host {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    background: var(--red);
+    color: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    box-shadow: var(--hard-shadow);
+    padding: 2rem 1.25rem;
+    transform: rotate(-0.8deg);
+  }
+  
+  .hostTitle {
+    font: 400 clamp(1.7rem, 6vw, 2.6rem) var(--font-display);
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+  
+  .hostText {
+    font-size: 1.7rem;
+    line-height: 1;
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+  }

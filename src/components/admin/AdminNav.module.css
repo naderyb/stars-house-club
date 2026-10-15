@@ -1,0 +1,38 @@
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  
+  .link,
+  .logout {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 1.1rem;
+    font: 800 0.9rem var(--font-body);
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .link[aria-current="page"] {
+    background: var(--red);
+    color: var(--cream);
+  }
+  
+  .logout {
+    margin-left: auto;
+    background: var(--yellow);
+  }
+  
+  .link:active,
+  .logout:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }

@@ -1,0 +1,121 @@
+.card {
+    position: relative;
+    display: grid;
+    gap: 1.75rem;
+    align-items: center;
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    transform: rotate(-0.8deg);
+  }
+  
+  @media (min-width: 800px) {
+    .card {
+      grid-template-columns: 0.9fr 1.1fr;
+    }
+  }
+  
+  .badge {
+    position: absolute;
+    top: -16px;
+    left: 18px;
+    z-index: 2;
+    transform: rotate(-4deg);
+    font: 400 0.85rem var(--font-display);
+    text-transform: uppercase;
+    background: var(--red);
+    color: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    padding: 0.3rem 1rem;
+  }
+  
+  .free {
+    position: absolute;
+    top: -14px;
+    right: 18px;
+    z-index: 2;
+    transform: rotate(5deg);
+    font: 400 0.85rem var(--font-display);
+    text-transform: uppercase;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    padding: 0.3rem 1rem;
+  }
+  
+  .media {
+    position: relative;
+    max-width: 340px;
+    width: 100%;
+    margin-inline: auto;
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: var(--hard-shadow);
+    padding: 0.7rem 0.7rem 2rem;
+    transform: rotate(2deg);
+  }
+  
+  .tape {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    width: 100px;
+    height: 26px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 217, 122, 0.88);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+  
+  .photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--ink);
+    overflow: hidden;
+    background: var(--denim);
+  }
+  
+  .img {
+    object-fit: cover;
+  }
+  
+  .monogram {
+    font: 400 6rem var(--font-display);
+    color: var(--yellow);
+    text-shadow: 4px 4px 0 var(--red-dark);
+  }
+  
+  .text {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: start;
+  }
+  
+  .when {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  
+  .name {
+    font-size: clamp(2rem, 7vw, 3rem);
+    color: var(--red);
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  .craft {
+    font: 800 0.8rem var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+  }

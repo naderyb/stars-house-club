@@ -1,0 +1,160 @@
+.card {
+    position: relative;
+    display: grid;
+    gap: 1rem;
+    scroll-margin-top: 6rem; /* sticky header + banner offset when arriving from /events#id */
+  }
+  
+  .card:nth-child(odd) {
+    transform: rotate(-0.7deg);
+  }
+  
+  .card:nth-child(even) {
+    transform: rotate(0.7deg);
+  }
+  
+  .featured {
+    transform: rotate(-1deg);
+    box-shadow: 9px 9px 0 var(--ink);
+  }
+  
+  .past {
+    opacity: 0.8;
+    filter: grayscale(0.5);
+  }
+  
+  /* the card you land on from the banner flashes twice */
+  .card:target {
+    animation: flash 0.9s ease 2;
+  }
+  
+  .sticker {
+    position: absolute;
+    top: -14px;
+    right: 16px;
+    z-index: 1;
+    transform: rotate(4deg);
+    font: 400 0.8rem var(--font-display);
+    text-transform: uppercase;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    padding: 0.25rem 0.9rem;
+  }
+  
+  .media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    overflow: hidden;
+    background: var(--denim);
+  }
+  
+  .img {
+    object-fit: cover;
+  }
+  
+  .row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  /* ticket stub */
+  .date {
+    flex-shrink: 0;
+    width: 66px;
+    display: grid;
+    justify-items: center;
+    padding: 0.5rem 0;
+    background: var(--red);
+    color: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    box-shadow: 3px 3px 0 var(--ink);
+    text-transform: uppercase;
+    font: 700 0.7rem var(--font-body);
+    letter-spacing: 0.06em;
+  }
+  
+  .date strong {
+    font: 400 2rem var(--font-display);
+    line-height: 1;
+  }
+  
+  .body {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  
+  .when {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  
+  .label {
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: var(--wobble);
+    padding: 0.1rem 0.6rem;
+    font: 400 0.75rem var(--font-display);
+    text-transform: uppercase;
+  }
+  
+  .title {
+    font-size: clamp(1.4rem, 5vw, 1.9rem);
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  .tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tags li {
+    font: 700 0.72rem var(--font-body);
+    text-transform: uppercase;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: var(--wobble);
+    padding: 0.15rem 0.7rem;
+  }
+  
+  .tags .price {
+    background: var(--yellow);
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 0.25rem;
+  }
+  
+  .actions :global(.btn) {
+    min-height: 44px;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.1rem;
+  }
+  
+  @keyframes flash {
+    50% {
+      box-shadow: 0 0 0 6px var(--yellow), var(--hard-shadow);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .card:target {
+      animation: none;
+    }
+  }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bagel_Fat_One, Caveat, Montserrat } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import EventBanner from "@/components/EventBanner";
 import Footer from "@/components/Footer";
 
 const bagel = Bagel_Fat_One({
@@ -43,6 +44,7 @@ export default function RootLayout({
     >
       <body>
         <Header />
+        <EventBanner />
         {children}
         <Footer />
       </body>

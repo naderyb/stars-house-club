@@ -15,11 +15,11 @@ export interface ExploreCard {
       text: "Painting, clay, friendship bracelets. Come make something.",
       href: "/workshops",
     },
-    {
-      title: "Artist Spotlight",
-      text: "A new artist takes center stage every month. Free to attend.",
-      href: "/artists",
-    },
+    // {
+    //   title: "Artist Spotlight",
+    //   text: "A new artist takes center stage every month. Free to attend.",
+    //   href: "/artists",
+    // },
     {
       title: "The Menu",
       text: "Coffee, tea and homemade desserts at friendly prices.",

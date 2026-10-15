@@ -1,0 +1,32 @@
+.status,
+.role {
+  display: inline-flex;
+  align-items: center;
+  font: 800 0.78rem var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  white-space: nowrap;
+}
+
+.status[data-status="pending"] {
+  background: var(--yellow);
+}
+
+.status[data-status="accepted"] {
+  background: #b9efc8;
+}
+
+.status[data-status="rejected"] {
+  background: #ffb3b3;
+}
+
+.role {
+  background: var(--cream);
+}
+
+.role[data-role="artist"] {
+  background: var(--periwinkle);
+}

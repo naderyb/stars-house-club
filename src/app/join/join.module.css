@@ -1,0 +1,50 @@
+.page {
+    padding-block: 2.5rem 1rem;
+    display: grid;
+    gap: 2.5rem;
+  }
+  
+  .steps {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+  }
+  
+  @media (min-width: 800px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+  
+  .step:nth-child(odd) {
+    transform: rotate(-0.8deg);
+  }
+  
+  .step:nth-child(even) {
+    transform: rotate(0.8deg);
+  }
+  
+  .num {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--red);
+    color: var(--cream);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    font: 400 1.4rem var(--font-display);
+  }
+  
+  .stepTitle {
+    font-size: 1.2rem;
+    margin-bottom: 0.15rem;
+  }

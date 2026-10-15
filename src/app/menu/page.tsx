@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import PageHeader from "@/components/PageHeader";
 import MenuSection from "@/components/MenuSection";
-import { menuNote, menuSections } from "@/data/menu";
+import { menuNote } from "@/data/menu";
+import { getPublicMenu } from "@/lib/menu";
 import styles from "./menu.module.css";
 
 export const metadata: Metadata = {
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
     "Coffee, tea, cold drinks and homemade desserts at friendly prices at Stars House Club, Algiers.",
 };
 
-export default function MenuPage() {
+export const revalidate = 60;
+
+export default async  function MenuPage() {
+  const menuSections = await getPublicMenu();
   return (
     <main className={`container ${styles.page}`}>
       <div className={styles.sheet}>

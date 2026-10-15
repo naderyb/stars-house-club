@@ -11,6 +11,8 @@ export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
@@ -34,20 +36,33 @@ export default function Header() {
           className={`${styles.nav} ${open ? styles.navOpen : ""}`}
           aria-label="Main"
         >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`${styles.link} ${
-                pathname === link.href ? styles.active : ""
-              }`}
-              aria-current={pathname === link.href ? "page" : undefined}
-              onClick={() => setOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks
+            .filter((link) => link.href !== "/join")
+            .map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`${styles.link} ${
+                  pathname === link.href ? styles.active : ""
+                }`}
+                aria-current={pathname === link.href ? "page" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
         </nav>
+
+        <Link
+          href="/join"
+          className={`${styles.link} ${styles.cta} ${
+            pathname === "/join" ? styles.active : ""
+          }`}
+          aria-current={pathname === "/join" ? "page" : undefined}
+          onClick={() => setOpen(false)}
+        >
+          Join
+        </Link>
       </div>
     </header>
   );

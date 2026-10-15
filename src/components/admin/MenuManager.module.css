@@ -1,0 +1,240 @@
+.wrap {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 820px;
+  }
+  
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  
+  .title {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    color: var(--cream);
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  .add {
+    min-height: 48px;
+    padding: 0 1.2rem;
+    font: 400 0.9rem var(--font-display);
+    text-transform: uppercase;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+  }
+  
+  .add:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  
+  .card {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .empty {
+    text-align: center;
+    max-width: 420px;
+  }
+  
+  .error {
+    font: 800 0.9rem var(--font-body);
+    background: #ffd0d0;
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    padding: 0.7rem 1rem;
+  }
+  
+  .formTitle {
+    font-size: 1.3rem;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  /* ---------- category header ---------- */
+  .catHead {
+    display: grid;
+    gap: 0.7rem;
+  }
+  
+  .catTitle {
+    font-size: clamp(1.4rem, 5vw, 1.9rem);
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+  }
+  
+  .tag {
+    font: 800 0.72rem var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.15rem 0.7rem;
+  }
+  
+  /* ---------- buttons row (shared by categories and items) ---------- */
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  
+  .tools button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 0.8rem;
+    font: 800 0.82rem var(--font-body);
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .tools button:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+  
+  .tools button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  
+  .tools .danger {
+    background: #ffb3b3;
+  }
+  
+  .tools .toggle[aria-pressed="true"] {
+    background: #b9efc8;
+  }
+  
+  .tools .toggle[aria-pressed="false"] {
+    background: #d9d9d9;
+  }
+  
+  /* ---------- items ---------- */
+  .items {
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+  }
+  
+  .item {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.7rem 0.8rem;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+  }
+  
+  .item[data-off="true"] {
+    opacity: 0.6;
+    background: #eee;
+  }
+  
+  .itemMain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  
+  .itemName {
+    overflow-wrap: anywhere;
+  }
+  
+  .itemName small {
+    font-weight: 600;
+    opacity: 0.7;
+  }
+  
+  .group {
+    font: 700 0.72rem var(--font-body);
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+  
+  .price {
+    font: 800 1.05rem var(--font-body);
+    font-variant-numeric: tabular-nums;
+  }
+  
+  @media (min-width: 700px) {
+    .item {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+    .item .tools {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  /* ---------- add item button ---------- */
+  .addItem {
+    min-height: 48px;
+    font: 800 0.9rem var(--font-body);
+    background: transparent;
+    border: 3px dashed var(--ink);
+    border-radius: var(--wobble-soft);
+    cursor: pointer;
+  }
+  
+  .addItem:active:not(:disabled) {
+    background: var(--yellow);
+  }
+  
+  /* ---------- forms ---------- */
+  .form {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+  }
+  
+  .formActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+  
+  .save {
+    min-height: 48px;
+  }
+  
+  .cancel {
+    min-height: 48px;
+    padding: 0 1.2rem;
+    font: 800 0.9rem var(--font-body);
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    cursor: pointer;
+  }
+  
+  @media (hover: hover) {
+    .tools button:hover:not(:disabled) {
+      background: var(--yellow);
+    }
+    .addItem:hover:not(:disabled) {
+      background: var(--yellow);
+    }
+  }

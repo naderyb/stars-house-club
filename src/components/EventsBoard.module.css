@@ -1,0 +1,128 @@
+.board {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  /* ---------- upcoming / past ---------- */
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  
+  .tab {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    background: var(--cream);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .tab span {
+    display: grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.3rem;
+    border-radius: 999px;
+    background: var(--yellow);
+    color: var(--ink);
+    font: 800 0.8rem var(--font-body);
+  }
+  
+  .tab[aria-selected="true"] {
+    background: var(--red);
+    color: var(--cream);
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  
+  .tab:active {
+    transform: scale(0.96);
+  }
+  
+  /* ---------- category chips ---------- */
+  .chips {
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0.25rem var(--space) 0.5rem;
+    margin-inline: calc(var(--space) * -1);
+  }
+  
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .chip {
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 0 1.1rem;
+    font: 700 0.85rem var(--font-body);
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .chip:active {
+    transform: scale(0.95);
+  }
+  
+  .chip[aria-pressed="true"] {
+    background: var(--yellow);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  /* ---------- list ---------- */
+  .list {
+    display: grid;
+    gap: 2rem;
+    max-width: 760px;
+  }
+  
+  /* ---------- empty state ---------- */
+  .empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+    text-align: center;
+    max-width: 520px;
+    transform: rotate(-0.8deg);
+  }
+  
+  .emptyTitle {
+    font: 400 1.6rem var(--font-display);
+    text-transform: uppercase;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  /* ---------- PC only extras (optional) ---------- */
+  @media (hover: hover) {
+    .tab[aria-selected="false"]:hover,
+    .chip:hover {
+      background: var(--yellow);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .tab,
+    .chip {
+      transition: none;
+    }
+  }

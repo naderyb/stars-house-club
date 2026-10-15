@@ -1,0 +1,143 @@
+.card {
+    position: relative;
+    display: grid;
+    gap: 0.3rem;
+    align-content: start;
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 0.6rem 0.6rem 0.8rem;
+    height: 100%;
+  }
+  
+  .tape {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    width: 70px;
+    height: 22px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 217, 122, 0.88);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+  
+  .photo {
+    position: relative;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--ink);
+    overflow: hidden;
+    background: var(--denim);
+  }
+  
+  .img {
+    object-fit: cover;
+  }
+  
+  .monogram {
+    font: 400 3.5rem var(--font-display);
+    color: var(--yellow);
+    text-shadow: 3px 3px 0 var(--red-dark);
+  }
+  
+  .name {
+    margin-top: 0.4rem;
+    font-size: 1.15rem;
+    line-height: 1.05;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+    overflow-wrap: anywhere;
+  }
+  
+  .craft {
+    font: 800 0.72rem var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  
+  .when {
+    font: 400 1.2rem var(--font-script);
+    line-height: 1;
+  }
+  
+  /* tap to open the bio */
+  .more summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    font: 800 0.85rem var(--font-body);
+    text-decoration: underline wavy var(--red);
+    text-underline-offset: 4px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .more summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  .more[open] summary {
+    color: var(--red);
+  }
+  
+  .more p {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    animation: fade 0.25s ease;
+  }
+  
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+  }
+  
+  .link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 0 0.8rem;
+    font: 800 0.78rem var(--font-body);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    transition: transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .link:active {
+    transform: scale(0.95);
+  }
+  
+  @media (hover: hover) {
+    .link:hover {
+      background: var(--cream);
+    }
+  }
+  
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .more p {
+      animation: none;
+    }
+    .link {
+      transition: none;
+    }
+  }
