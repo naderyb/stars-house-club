@@ -1,0 +1,178 @@
+.wrap {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  /* full-bleed on phones so the next card peeks in */
+  .track {
+    position: relative; /* offsetLeft reference for goTo() */
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0.5rem var(--space) 1rem;
+    margin-inline: calc(var(--space) * -1);
+  }
+  
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .slide {
+    flex: 0 0 82%;
+    scroll-snap-align: center;
+  }
+  
+  @media (min-width: 700px) {
+    .slide {
+      flex-basis: 46%;
+    }
+  }
+  
+  @media (min-width: 1000px) {
+    .slide {
+      flex-basis: 32%;
+    }
+  }
+  
+  .card {
+    height: 100%;
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+  }
+  
+  .slide:nth-child(odd) .card {
+    transform: rotate(-1deg);
+  }
+  
+  .slide:nth-child(even) .card {
+    transform: rotate(1deg);
+  }
+  
+  /* ---------- photo / video ---------- */
+  .media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    overflow: hidden;
+    background: var(--denim);
+  }
+  
+  .img,
+  .video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+  
+  .num {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--red);
+    color: var(--cream);
+    border: 3px solid var(--ink);
+    box-shadow: 2px 2px 0 var(--ink);
+    font: 400 1.2rem var(--font-display);
+    pointer-events: none;
+  }
+  
+  .stepTitle {
+    font-size: 1.4rem;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  /* ---------- controls ---------- */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .arrow {
+    width: 48px;
+    height: 48px;
+    font: 800 1.4rem var(--font-body);
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .arrow:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  
+  .arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  .dots {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* small dot, big tap area */
+  .dot {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    margin: 0 7px;
+    padding: 0;
+    border: 2px solid var(--cream);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  
+  .dot::after {
+    content: "";
+    position: absolute;
+    inset: -14px -8px;
+  }
+  
+  .dot[aria-current="true"] {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    transform: scale(1.35);
+  }
+  
+  .hint {
+    text-align: center;
+    line-height: 1;
+    color: var(--cream);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .arrow,
+    .dot {
+      transition: none;
+    }
+  }
