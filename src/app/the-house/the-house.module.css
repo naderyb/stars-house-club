@@ -1,0 +1,99 @@
+.page {
+  padding-block: 2.5rem 1rem;
+  display: grid;
+  gap: 3rem;
+}
+
+/* ---------- story ---------- */
+.story {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.leadCard {
+  transform: rotate(-1deg);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.storyTitle {
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  color: var(--red);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+.lead {
+  font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+  line-height: 1.2;
+}
+
+/* paragraphs alternate left and right like notes pinned on a wall */
+.para {
+  max-width: 640px;
+}
+
+.left .para {
+  transform: rotate(-0.8deg);
+  margin-right: auto;
+}
+
+.right .para {
+  transform: rotate(0.8deg);
+  margin-left: auto;
+}
+
+.quote {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  background: var(--red);
+  color: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble-soft);
+  box-shadow: var(--hard-shadow);
+  padding: 1.5rem;
+  transform: rotate(-0.6deg);
+}
+
+.quote p {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: clamp(1.1rem, 4vw, 1.6rem);
+  line-height: 1.2;
+}
+
+/* ---------- tour ---------- */
+.tour {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.tourTitle {
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  color: var(--cream);
+  text-shadow: 3px 3px 0 var(--ink);
+}
+
+/* ---------- cta ---------- */
+.cta {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  transform: rotate(-0.8deg);
+}
+
+.ctaTitle {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: clamp(1.6rem, 6vw, 2.6rem);
+  line-height: 1.05;
+  color: var(--red);
+  text-shadow: 3px 3px 0 var(--ink);
+}
+
+.ctaText {
+  font-size: 2rem;
+  line-height: 1;
+}
