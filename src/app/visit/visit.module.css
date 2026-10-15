@@ -1,0 +1,136 @@
+.page {
+    padding-block: 2.5rem 1rem;
+    display: grid;
+    gap: 2.5rem;
+  }
+  
+  /* ---------- quick actions ---------- */
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+  
+  .actions > :first-child {
+    grid-column: 1 / -1; /* directions button is the big one on phones */
+    text-align: center;
+    font-size: 1.1rem;
+    padding-block: 0.9rem;
+  }
+  
+  .actions > * {
+    text-align: center;
+    min-height: 48px;
+  }
+  
+  @media (min-width: 700px) {
+    .actions {
+      grid-template-columns: repeat(3, auto);
+      justify-content: start;
+    }
+    .actions > :first-child {
+      grid-column: auto;
+      font-size: 1rem;
+      padding-block: 0.7rem;
+    }
+  }
+  
+  /* ---------- address + hours ---------- */
+  .info {
+    display: grid;
+    gap: 1.75rem;
+    align-items: start;
+  }
+  
+  @media (min-width: 900px) {
+    .info {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .address {
+    display: grid;
+    gap: 0.75rem;
+    transform: rotate(-0.8deg);
+  }
+  
+  .title {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  .lines {
+    display: grid;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 1.15rem;
+  }
+  
+  .landmark {
+    font-size: 1.4rem;
+    line-height: 1.1;
+  }
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  /* ---------- sections ---------- */
+  .section {
+    display: grid;
+    gap: 1.25rem;
+  }
+  
+  .sectionTitle {
+    font-size: clamp(2rem, 7vw, 3.2rem);
+    color: var(--cream);
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  /* ---------- rules ---------- */
+  .rules {
+    display: grid;
+    gap: 1.25rem;
+  }
+  
+  .rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    max-width: 560px;
+  }
+  
+  .left .rule {
+    transform: rotate(-0.8deg);
+    margin-right: auto;
+  }
+  
+  .right .rule {
+    transform: rotate(0.8deg);
+    margin-left: auto;
+  }
+  
+  .star {
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  .ruleTitle {
+    font-size: 1.3rem;
+    margin-bottom: 0.2rem;
+  }
+  
+  /* ---------- socials ---------- */
+  .social {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transform: rotate(0.8deg);
+  }
