@@ -1,43 +1,310 @@
 .footer {
-    margin-top: 4rem;
-    background: var(--red);
-    color: var(--cream);
-    border-top: 3px solid var(--ink);
-    padding-block: 2rem 1rem;
+  position: relative;
+  margin-top: 5rem;
+  padding-block: 2.5rem 1.25rem;
+  overflow-x: clip;
+  background-color: var(--red);
+  color: var(--cream);
+}
+
+/* zigzag top edge: a black layer sits 4px above the red one, so it reads as an outline */
+.footer::before,
+.footer::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 18px;
+  -webkit-mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% / 28px 100%;
+  mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% / 28px 100%;
+  pointer-events: none;
+}
+
+.footer::before {
+  top: -22px;
+  background: var(--ink);
+}
+
+.footer::after {
+  top: -18px;
+  background: var(--red);
+}
+
+/* ---------- brand + card ---------- */
+.hero {
+  display: grid;
+  gap: 2.25rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .hero {
+    grid-template-columns: 1.3fr 1fr;
+    gap: 3rem;
   }
-  
-  .inner {
-    display: grid;
-    gap: 1.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.star {
+  flex-shrink: 0;
+  animation: wiggle 5s ease-in-out infinite;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  color: var(--yellow);
+  text-shadow: 3px 3px 0 var(--ink);
+  font-size: clamp(2.2rem, 9.5vw, 4.6rem);
+  line-height: 0.95;
+}
+
+.slogan {
+  margin-top: 0.7rem;
+  font-size: clamp(1.3rem, 4.5vw, 1.8rem);
+  line-height: 1;
+  transform: rotate(-2deg);
+  transform-origin: left center;
+}
+
+.card {
+  display: grid;
+  gap: 0.85rem;
+  color: var(--ink);
+  transform: rotate(1deg);
+}
+
+.cardTitle {
+  font-size: 1.7rem;
+  color: var(--red);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+.cardText {
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.cta :global(.btn) {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* live open / closed pill */
+.status {
+  min-height: 2.4rem;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font: 800 0.88rem var(--font-body);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble);
+  padding: 0.3rem 1rem;
+  background: var(--cream);
+}
+
+.status[data-state="unknown"] {
+  visibility: hidden;
+}
+
+.status[data-state="open"] {
+  background: #c9f2d4;
+}
+
+.status[data-state="closed"] {
+  background: #ffd0d0;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: #1f9d55;
+}
+
+.status[data-state="open"] .dot {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.status[data-state="closed"] .dot {
+  background: var(--red);
+}
+
+/* ---------- links ---------- */
+.cols {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 3px dashed rgba(255, 217, 122, 0.7);
+}
+
+@media (min-width: 800px) {
+  .cols {
+    grid-template-columns: 1fr 1fr auto;
+    align-items: start;
   }
-  
-  .name {
-    font-family: var(--font-display);
-    text-transform: uppercase;
-    font-size: 1.5rem;
+}
+
+.colTitle {
+  font-size: 1.1rem;
+  color: var(--yellow);
+  margin-bottom: 0.6rem;
+}
+
+.navList {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+  max-width: 340px;
+}
+
+.navList a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navList a:active {
+  color: var(--yellow);
+}
+
+.socials {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.pill {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 1.1rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pill:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* decorative: only shown from tablet up, where there is room for it */
+.people {
+  display: none;
+  width: 120px;
+  height: auto;
+  justify-self: end;
+  align-self: end;
+}
+
+@media (min-width: 800px) {
+  .people {
+    display: block;
   }
-  
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    font-weight: 700;
-  }
-  
-  .links a {
+}
+
+/* ---------- bottom line ---------- */
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+}
+
+.bottom p {
+  opacity: 0.9;
+}
+
+.toTop {
+  min-height: 44px;
+  padding: 0 1rem;
+  font: 800 0.8rem var(--font-body);
+  color: var(--cream);
+  background: transparent;
+  border: 2px solid var(--cream);
+  border-radius: 999px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toTop:active {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+/* ---------- PC only extras (optional) ---------- */
+@media (hover: hover) {
+  .navList a:hover {
     text-decoration: underline wavy var(--yellow);
-    text-underline-offset: 4px;
+    text-underline-offset: 5px;
   }
-  
-  .copy {
-    text-align: center;
-    font-size: 0.8rem;
-    margin-top: 1.5rem;
-    opacity: 0.8;
+  .pill:hover {
+    background: var(--yellow);
   }
-  
-  @media (min-width: 800px) {
-    .inner {
-      grid-template-columns: 1.2fr 1fr 1fr;
-    }
+  .toTop:hover {
+    background: var(--yellow);
+    color: var(--ink);
   }
+}
+
+/* ---------- animations ---------- */
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(31, 157, 85, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(31, 157, 85, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star,
+  .status[data-state="open"] .dot {
+    animation: none;
+  }
+  .pill {
+    transition: none;
+  }
+}
