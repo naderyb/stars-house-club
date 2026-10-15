@@ -1,0 +1,161 @@
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(2.5rem, 7vw, 5rem);
+    border-bottom: 3px solid var(--ink);
+  }
+  
+  /* ---------- yellow text wall ---------- */
+  .wall {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+    user-select: none;
+  }
+  
+  .wallRow {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 7vw, 5rem);
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--yellow);
+    opacity: 0.2;
+  }
+  
+  .wallRow:nth-child(even) {
+    transform: translateX(-12%);
+  }
+  
+  /* ---------- layout ---------- */
+  .content {
+    position: relative;
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+  
+  @media (min-width: 900px) {
+    .content {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+  }
+  
+  /* ---------- text card ---------- */
+  .card {
+    position: relative;
+    transform: rotate(-1.2deg);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+  }
+  
+  .sticker {
+    position: absolute;
+    top: -16px;
+    right: 18px;
+    transform: rotate(5deg);
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    padding: 0.3rem 0.9rem;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+  
+  .title {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .welcome {
+    font-family: var(--font-script);
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    text-transform: none;
+    line-height: 1;
+  }
+  
+  .house {
+    font-size: clamp(4.5rem, 17vw, 9rem);
+    color: var(--red);
+    text-shadow: 5px 5px 0 var(--ink);
+    line-height: 0.9;
+  }
+  
+  .tagline {
+    margin-top: 1rem;
+    font-family: var(--font-script);
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    line-height: 1.2;
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 1rem;
+    margin-top: 1.75rem;
+  }
+  
+  /* ---------- taped photo ---------- */
+  .media {
+    position: relative;
+    max-width: 420px;
+    margin-inline: auto;
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    box-shadow: var(--hard-shadow);
+    padding: 0.8rem 0.8rem 2.6rem;
+    transform: rotate(2.5deg);
+  }
+  
+  .photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border: 2px solid var(--ink);
+  }
+  
+  .tape {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    width: 110px;
+    height: 28px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 217, 122, 0.88);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  
+  .caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.45rem;
+    text-align: center;
+    line-height: 1;
+  }
+  
+  .star {
+    position: absolute;
+    right: -34px;
+    bottom: -38px;
+    animation: wiggle 4s ease-in-out infinite;
+  }
+  
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-7deg);
+    }
+    50% {
+      transform: rotate(7deg);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .star {
+      animation: none;
+    }
+  }

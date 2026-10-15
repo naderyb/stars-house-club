@@ -1,0 +1,25 @@
+.card {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    align-items: center;
+    margin-top: 4rem;
+    transform: rotate(-0.8deg);
+  }
+  
+  .title {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 1rem;
+  }
+  
+  @media (min-width: 800px) {
+    .card {
+      grid-template-columns: auto 1fr auto;
+      justify-items: stretch;
+    }
+  }

@@ -1,0 +1,43 @@
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .star {
+    flex-shrink: 0;
+    animation: wiggle 5s ease-in-out infinite;
+  }
+  
+  .title {
+    font-size: clamp(1.9rem, 7vw, 3.6rem);
+    text-shadow: 3px 3px 0 var(--yellow);
+  }
+  
+  .title span {
+    display: block;
+    color: var(--red);
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  .script {
+    line-height: 1.1;
+    margin-top: 0.4rem;
+    transform: rotate(-2deg);
+  }
+  
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-6deg);
+    }
+    50% {
+      transform: rotate(6deg);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .star {
+      animation: none;
+    }
+  }

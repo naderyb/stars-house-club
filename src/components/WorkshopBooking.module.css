@@ -1,0 +1,271 @@
+.hasBar {
+    padding-bottom: 6rem; /* room for the sticky bar */
+  }
+  
+  .grid {
+    display: grid;
+    gap: 1.75rem;
+    align-items: start;
+  }
+  
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  /* ---------- workshop cards ---------- */
+  .card {
+    display: grid;
+    gap: 0.75rem;
+  }
+  
+  .card:nth-child(odd) {
+    transform: rotate(-0.8deg);
+  }
+  
+  .card:nth-child(even) {
+    transform: rotate(0.8deg);
+  }
+  
+  .head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+  }
+  
+  .title {
+    font-size: clamp(1.5rem, 5vw, 1.9rem);
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  
+  .ar {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  
+  .blurb {
+    font-size: 0.95rem;
+  }
+  
+  .materials {
+    justify-self: start;
+    font: 800 0.7rem var(--font-body);
+    text-transform: uppercase;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: var(--wobble);
+    padding: 0.2rem 0.7rem;
+    transform: rotate(-2deg);
+  }
+  
+  /* ---------- options ---------- */
+  .options {
+    list-style: none;
+    display: grid;
+  }
+  
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.4rem;
+    border-bottom: 2px dotted rgba(17, 17, 17, 0.3);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+  }
+  
+  .option:last-child {
+    border-bottom: 0;
+  }
+  
+  .option[data-selected="true"] {
+    background: rgba(255, 217, 122, 0.55);
+  }
+  
+  .info {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+  }
+  
+  .name {
+    font-weight: 700;
+  }
+  
+  .name small {
+    font-weight: 600;
+    opacity: 0.7;
+  }
+  
+  .hint {
+    font-size: 0.72rem;
+    font-style: italic;
+    opacity: 0.7;
+  }
+  
+  .price {
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  
+  /* ---------- add / stepper (thumb sized) ---------- */
+  .add {
+    min-width: 72px;
+    min-height: 44px;
+    font: 400 0.9rem var(--font-display);
+    text-transform: uppercase;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .add:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  
+  .add:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  .stepper {
+    display: flex;
+    align-items: center;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    overflow: hidden;
+    animation: pop 0.2s ease;
+  }
+  
+  .stepper button {
+    width: 44px;
+    height: 44px;
+    font: 800 1.4rem var(--font-body);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .stepper button:active {
+    background: var(--red);
+    color: var(--cream);
+  }
+  
+  .qty {
+    min-width: 1.4rem;
+    text-align: center;
+    font-weight: 800;
+  }
+  
+  /* ---------- footer note ---------- */
+  .note {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    padding: 0.7rem 1rem;
+    transform: rotate(-0.6deg);
+  }
+  
+  /* ---------- sticky booking bar ---------- */
+  .bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem var(--space) calc(0.75rem + env(safe-area-inset-bottom));
+    background: var(--red);
+    color: var(--cream);
+    border-top: 3px solid var(--ink);
+    animation: barUp 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  
+  .count {
+    font: 700 0.75rem var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  
+  .total {
+    font: 400 1.5rem var(--font-display);
+    line-height: 1;
+  }
+  
+  .barActions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  
+  .clear {
+    min-height: 44px;
+    padding: 0 0.3rem;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: 700 0.85rem var(--font-body);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .bar :global(.btn) {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+  
+  /* ---------- PC only extras (optional) ---------- */
+  @media (hover: hover) {
+    .add:hover:not(:disabled) {
+      background: var(--cream);
+    }
+  }
+  
+  @keyframes barUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  
+  @keyframes pop {
+    from {
+      transform: scale(0.85);
+      opacity: 0.5;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .bar,
+    .stepper {
+      animation: none;
+    }
+    .add,
+    .option {
+      transition: none;
+    }
+  }

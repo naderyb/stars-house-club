@@ -1,0 +1,40 @@
+.frame {
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    box-shadow: var(--hard-shadow);
+    overflow: hidden;
+    background: var(--cream);
+  }
+  
+  .iframe {
+    display: block;
+    width: 100%;
+    height: min(70vh, 380px);
+    border: 0;
+  }
+  
+  .facade {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    min-height: 240px;
+    align-content: center;
+    /* faint grid, like the floor plans */
+    background-image:
+      linear-gradient(rgba(17, 17, 17, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(17, 17, 17, 0.07) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  
+  .text {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }

@@ -1,0 +1,27 @@
+.card {
+    max-width: 760px;
+    margin-inline: auto;
+    transform: rotate(0.8deg);
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  
+  .title {
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    color: var(--red);
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  .lead {
+    font-family: var(--font-script);
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    line-height: 1.2;
+  }
+  
+  .mark {
+    background: var(--yellow);
+    padding: 0 0.3rem;
+    border-radius: var(--wobble-soft);
+    font-weight: 700;
+  }
