@@ -1,0 +1,238 @@
+.wrap {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 760px;
+  }
+  
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  
+  .title {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    color: var(--cream);
+    text-shadow: 3px 3px 0 var(--ink);
+  }
+  
+  .add {
+    min-height: 48px;
+    padding: 0 1.2rem;
+    font: 400 0.9rem var(--font-display);
+    text-transform: uppercase;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+  }
+  
+  .add:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  
+  .add:disabled {
+    opacity: 0.6;
+  }
+  
+  .note {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    padding: 0.7rem 1rem;
+    transform: rotate(-0.4deg);
+  }
+  
+  .error {
+    font: 800 0.9rem var(--font-body);
+    background: #ffd0d0;
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+    padding: 0.7rem 1rem;
+  }
+  
+  .muted {
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+  
+  .formTitle {
+    font-size: 1.3rem;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+    overflow-wrap: anywhere;
+  }
+  
+  /* ---------- forms ---------- */
+  .form,
+  .handoff {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .passRow {
+    display: flex;
+    gap: 0.6rem;
+  }
+  
+  .passRow > input {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .mono {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace !important;
+    letter-spacing: 0.04em;
+  }
+  
+  .small {
+    flex-shrink: 0;
+    min-height: 48px;
+    padding: 0 1rem;
+    font: 800 0.82rem var(--font-body);
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    cursor: pointer;
+  }
+  
+  .small:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+  
+  .formActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+  
+  .save {
+    min-height: 48px;
+  }
+  
+  .cancel {
+    min-height: 48px;
+    padding: 0 1.2rem;
+    font: 800 0.9rem var(--font-body);
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    cursor: pointer;
+  }
+  
+  /* ---------- details to hand over ---------- */
+  .creds {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 1rem;
+    padding: 0.8rem 1rem;
+    background: #fff;
+    border: 2px dashed var(--ink);
+    border-radius: 12px;
+  }
+  
+  .creds dt {
+    font-weight: 800;
+    opacity: 0.7;
+  }
+  
+  .creds dd {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+  
+  /* ---------- admins list ---------- */
+  .list {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .row {
+    display: grid;
+    gap: 0.8rem;
+  }
+  
+  @media (min-width: 640px) {
+    .row {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+  }
+  
+  .who {
+    display: grid;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+  
+  .name {
+    font-size: 1.15rem;
+    overflow-wrap: anywhere;
+  }
+  
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  
+  .badge {
+    font: 800 0.72rem var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.15rem 0.7rem;
+  }
+  
+  .badge[data-tone="ok"] {
+    background: #b9efc8;
+  }
+  
+  .badge[data-tone="wait"] {
+    background: var(--yellow);
+  }
+  
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tools button {
+    min-height: 44px;
+    padding: 0 1rem;
+    font: 800 0.82rem var(--font-body);
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  
+  .tools button:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+  
+  .tools button:disabled {
+    opacity: 0.5;
+  }
+  
+  .tools .danger {
+    background: #ffb3b3;
+  }
+  
+  @media (hover: hover) {
+    .tools button:hover:not(:disabled),
+    .small:hover:not(:disabled) {
+      background: var(--yellow);
+    }
+  }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { normalizeUsername, STARTER } from "@/lib/admin/auth";
+import { normalizeUsername, STARTER, STARTER_ID } from "@/lib/admin/auth";
 import { hashPassword } from "@/lib/admin/password";
 import {
   adminFromRequest,
@@ -11,14 +11,14 @@ import { getServiceClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
+const json = (body: Record<string, unknown>, status: number) =>
+  NextResponse.json(body, { status });
+
 export async function POST(req: Request) {
   try {
     const session = await adminFromRequest({ allowMustChange: true });
     if (!session)
-      return NextResponse.json(
-        { ok: false, message: "Please sign in again." },
-        { status: 401 },
-      );
+      return json({ ok: false, message: "Please sign in again." }, 401);
 
     const body = await req.json().catch(() => null);
     const username = normalizeUsername(
@@ -47,27 +47,78 @@ export async function POST(req: Request) {
 
     if (password !== confirm) errors.confirm = "The two passwords don't match.";
 
-    if (Object.keys(errors).length > 0) {
-      return NextResponse.json({ ok: false, errors }, { status: 422 });
-    }
+    if (Object.keys(errors).length > 0) return json({ ok: false, errors }, 422);
 
     const supabase = getServiceClient();
-    const { error } = await supabase.from("admin_account").upsert({
-      id: 1,
+    const stamp = new Date();
+    const values = {
       username,
       password_hash: await hashPassword(password),
-      updated_at: new Date().toISOString(),
-    });
-    if (error) throw error;
+      must_change: false,
+      updated_at: stamp.toISOString(),
+    };
+
+    let adminId = session.id;
+
+    if (session.id === STARTER_ID) {
+      // very first account: only allowed while nobody has one
+      const { count, error: countError } = await supabase
+        .from("admins")
+        .select("id", { count: "exact", head: true });
+      if (countError) throw countError;
+      if (count !== 0) {
+        return json(
+          {
+            ok: false,
+            message: "An admin account already exists. Please sign in with it.",
+          },
+          409,
+        );
+      }
+
+      const { data, error } = await supabase
+        .from("admins")
+        .insert(values)
+        .select("id")
+        .single();
+      if (error) {
+        if (error.code === "23505") {
+          return json(
+            { ok: false, errors: { username: "That username is taken." } },
+            422,
+          );
+        }
+        throw error;
+      }
+      adminId = data.id;
+    } else {
+      const { error } = await supabase
+        .from("admins")
+        .update(values)
+        .eq("id", session.id);
+      if (error) {
+        if (error.code === "23505") {
+          return json(
+            { ok: false, errors: { username: "That username is taken." } },
+            422,
+          );
+        }
+        throw error;
+      }
+    }
 
     const res = NextResponse.json({ ok: true });
-    res.cookies.set(SESSION_COOKIE, createSessionToken(false), cookieOptions);
+    res.cookies.set(
+      SESSION_COOKIE,
+      createSessionToken(adminId, stamp.getTime()),
+      cookieOptions,
+    );
     return res;
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
+    return json(
       { ok: false, message: "Something went wrong on our side." },
-      { status: 500 },
+      500,
     );
   }
 }
