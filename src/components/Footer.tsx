@@ -37,8 +37,7 @@ export default function Footer() {
           </h2>
           <FooterStatus />
           <p className={styles.cardText}>
-            Hard to find us? We&apos;ve got the map and a human on
-            WhatsApp.
+            Hard to find us? We&apos;ve got the map and a human on WhatsApp.
           </p>
           <div className={styles.cta}>
             <Link href="/visit" className="btn btn--red">
@@ -100,10 +99,21 @@ export default function Footer() {
 
       {/* ---------- bottom line ---------- */}
       <div className={`container ${styles.bottom}`}>
-        <p>
-          © {new Date().getFullYear()} {siteConfig.name} · made with ♥ in{" "}
-          {siteConfig.city} by {siteConfig.developer} insta: {siteConfig.developper_social_media}
-        </p>
+        <div className={styles.legal}>
+          <p>
+            © {new Date().getFullYear()} {siteConfig.name}
+          </p>
+          <p className={styles.credit}>
+            Made with ♥ in {siteConfig.city} by{" "}
+            <a
+              href={siteConfig.developerInstagram}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {siteConfig.developer} <span aria-hidden="true">↗</span>
+            </a>
+          </p>
+        </div>
         <BackToTop />
       </div>
     </footer>

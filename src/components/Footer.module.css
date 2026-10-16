@@ -242,8 +242,25 @@
   font-size: 0.8rem;
 }
 
-.bottom p {
+.legal {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.legal p {
   opacity: 0.9;
+}
+
+.credit a {
+  display: inline-block;
+  padding-block: 0.35rem; /* easier to tap on a phone */
+  font-weight: 800;
+  text-decoration: underline wavy var(--yellow);
+  text-underline-offset: 4px;
+}
+
+.credit a:active {
+  color: var(--yellow);
 }
 
 .toTop {

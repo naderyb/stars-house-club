@@ -8,7 +8,7 @@ export const siteConfig = {
   whatsapp: `https://wa.me/${process.env.WHATSAPP_PHONE}`,
   mapsUrl: "https://maps.app.goo.gl/SfytPhe8b5jAUMVF6",
   developer: "YOUB Nader aka HCHICHA",
-  developper_social_media: "https://instagram.com/notnadertho",
+  developerInstagram: "https://instagram.com/notnadertho",
 } as const;
 
 export interface NavLink {
