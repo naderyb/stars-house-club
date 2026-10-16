@@ -8,7 +8,7 @@ import styles from "./Footer.module.css";
 
 const socials = [
   { label: "Instagram", href: siteConfig.instagram },
-  { label: "TikTok", href: siteConfig.tiktok },
+  // { label: "TikTok", href: siteConfig.tiktok },
   { label: "WhatsApp", href: siteConfig.whatsapp },
 ];
 
@@ -37,7 +37,7 @@ export default function Footer() {
           </h2>
           <FooterStatus />
           <p className={styles.cardText}>
-            Hard to find us? We&apos;ve got the map, the photos, and a human on
+            Hard to find us? We&apos;ve got the map and a human on
             WhatsApp.
           </p>
           <div className={styles.cta}>
@@ -102,7 +102,7 @@ export default function Footer() {
       <div className={`container ${styles.bottom}`}>
         <p>
           © {new Date().getFullYear()} {siteConfig.name} · made with ♥ in{" "}
-          {siteConfig.city}
+          {siteConfig.city} by {siteConfig.developer} insta: {siteConfig.developper_social_media}
         </p>
         <BackToTop />
       </div>

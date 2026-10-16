@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
 import FloorPlan from "@/components/FloorPlan";
@@ -62,9 +61,6 @@ export default function TheHousePage() {
             You&apos;ve got the map, now act like you live here.
           </p>
           <p className={`script ${styles.ctaText}`}>welcome home ♥</p>
-          <Link href="/visit" className="btn btn--red">
-            How to find us
-          </Link>
         </div>
       </Reveal>
     </main>

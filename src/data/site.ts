@@ -3,11 +3,12 @@ export const siteConfig = {
   tagline: "A cultural space for art, music & creativity.",
   slogan: "for the dreamers, creators and believers",
   city: "Algiers",
-  // TODO: replace with the real links and numbers
-  instagram: "https://instagram.com/",
-  tiktok: "https://tiktok.com/",
-  whatsapp: "https://wa.me/",
-  mapsUrl: "https://maps.google.com/",
+  instagram: "https://instagram.com/starshouseclub",
+  // tiktok: "https://tiktok.com/",
+  whatsapp: `https://wa.me/${process.env.WHATSAPP_PHONE}`,
+  mapsUrl: "https://maps.app.goo.gl/SfytPhe8b5jAUMVF6",
+  developer: "YOUB Nader aka HCHICHA",
+  developper_social_media: "https://instagram.com/notnadertho",
 } as const;
 
 export interface NavLink {

@@ -12,7 +12,7 @@ export default function VisitStrip() {
           <h2 id="visit-title" className={styles.title}>
             Hard to find us?
           </h2>
-          <p className="script">we&apos;ve got the map, and the photos too.</p>
+          <p className="script">we&apos;ve got the map abd a human on WhatsApp too!!</p>
         </div>
         <div className={styles.actions}>
           <Link href="/visit" className="btn btn--red">

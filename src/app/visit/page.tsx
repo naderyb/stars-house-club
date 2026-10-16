@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import HoursCard from "@/components/HoursCard";
-import FindUs from "@/components/FindUs";
 import MapEmbed from "@/components/MapEmbed";
 import CopyButton from "@/components/CopyButton";
 import Reveal from "@/components/Reveal";
@@ -81,14 +80,6 @@ export default function VisitPage() {
         <HoursCard />
       </div>
 
-      {/* ---------- how to find us ---------- */}
-      <section aria-labelledby="find-title" className={styles.section}>
-        <h2 id="find-title" className={styles.sectionTitle}>
-          How to find us
-        </h2>
-        <FindUs />
-      </section>
-
       {/* ---------- map ---------- */}
       <section aria-labelledby="map-title" className={styles.section}>
         <h2 id="map-title" className={styles.sectionTitle}>
@@ -142,14 +133,14 @@ export default function VisitPage() {
           >
             Instagram
           </a>
-          <a
+          {/* <a
             href={siteConfig.tiktok}
             className="btn"
             target="_blank"
             rel="noopener noreferrer"
           >
             TikTok
-          </a>
+          </a> */}
         </div>
       </section>
     </main>
