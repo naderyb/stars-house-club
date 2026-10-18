@@ -16,7 +16,7 @@ export default async function AdminSetupPage() {
       }}
     >
       {/* no menu while the starter login is still active: nothing else is allowed yet */}
-      {!session.mc && <AdminNav />}
+      {!session.mc && <AdminNav role={session.role} />}
       <CredentialsForm mustChange={session.mc} />
     </main>
   );
