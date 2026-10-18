@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getServiceClient } from "@/lib/supabase/server";
 import { STARTER_ID } from "./auth";
+import { roleHome, type Role } from "./roles";
 
 export const SESSION_COOKIE = "shc_admin";
 const MAX_AGE = 60 * 60 * 8; // 8 hours
@@ -20,8 +21,15 @@ interface TokenPayload {
 export interface AdminSession {
   id: string;
   username: string;
+  role: Role;
   /** true = must choose their own username and password before anything else */
   mc: boolean;
+}
+
+interface GuardOptions {
+  allowMustChange?: boolean;
+  /** who may pass. Leave out = any signed-in account */
+  roles?: readonly Role[];
 }
 
 function secret() {
@@ -79,7 +87,7 @@ export const cookieOptions = {
 };
 
 /** Reads the cookie AND checks the account still exists and the password
- *  hasn't changed since. Removed or reset admins are out on their next click. */
+ *  hasn't changed since. Removed or reset accounts are out on their next click. */
 export async function getSession(): Promise<AdminSession | null> {
   const store = await cookies();
   const token = readSessionToken(store.get(SESSION_COOKIE)?.value);
@@ -95,19 +103,24 @@ export async function getSession(): Promise<AdminSession | null> {
         .select("id", { count: "exact", head: true });
       if (error) throw error;
       return count === 0
-        ? { id: STARTER_ID, username: "starter", mc: true }
+        ? { id: STARTER_ID, username: "starter", role: "admin", mc: true }
         : null;
     }
 
     const { data, error } = await supabase
       .from("admins")
-      .select("id, username, must_change, updated_at")
+      .select("id, username, role, must_change, updated_at")
       .eq("id", token.aid)
       .maybeSingle();
     if (error) throw error;
     if (!data || new Date(data.updated_at).getTime() !== token.pv) return null;
 
-    return { id: data.id, username: data.username, mc: data.must_change };
+    return {
+      id: data.id,
+      username: data.username,
+      role: data.role as Role,
+      mc: data.must_change,
+    };
   } catch (err) {
     console.error("admin session check failed", err);
     return null;
@@ -115,21 +128,22 @@ export async function getSession(): Promise<AdminSession | null> {
 }
 
 /** For pages: sends the visitor to the right place instead of returning */
-export async function requireAdminPage(
-  options: { allowMustChange?: boolean } = {},
-) {
+export async function requireAdminPage(options: GuardOptions = {}) {
   const session = await getSession();
   if (!session) redirect("/admin/login");
   if (session.mc && !options.allowMustChange) redirect("/admin/setup");
+  // wrong role: send them home instead of showing an error
+  if (options.roles && !options.roles.includes(session.role)) {
+    redirect(roleHome[session.role]);
+  }
   return session;
 }
 
 /** For API routes: returns null when the request isn't allowed */
-export async function adminFromRequest(
-  options: { allowMustChange?: boolean } = {},
-) {
+export async function adminFromRequest(options: GuardOptions = {}) {
   const session = await getSession();
   if (!session) return null;
   if (session.mc && !options.allowMustChange) return null;
+  if (options.roles && !options.roles.includes(session.role)) return null;
   return session;
 }

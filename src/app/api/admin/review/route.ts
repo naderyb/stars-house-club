@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminFromRequest } from "@/lib/admin/session";
 import { getServiceClient } from "@/lib/supabase/server";
+import { ACCESS } from "@/lib/admin/roles";
 
 export const runtime = "nodejs";
 
@@ -9,7 +10,7 @@ const STATUSES = ["pending", "accepted", "rejected"];
 
 export async function POST(req: Request) {
   try {
-    if (!(await adminFromRequest())) {
+    if (!(await adminFromRequest({ roles: ACCESS.registrations }))) {
       return NextResponse.json(
         { ok: false, message: "Please sign in again." },
         { status: 401 },

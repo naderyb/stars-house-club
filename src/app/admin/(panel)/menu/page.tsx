@@ -1,8 +1,12 @@
 import MenuManager from "@/components/admin/MenuManager";
 import type { AdminCategory, AdminMenuItem } from "@/lib/admin/menuTypes";
 import { getServiceClient } from "@/lib/supabase/server";
+import { ACCESS } from "@/lib/admin/roles";
+import { requireAdminPage } from "@/lib/admin/session";
 
 export default async function AdminMenuPage() {
+  await requireAdminPage({ roles: ACCESS.menu });
+  
   const supabase = getServiceClient();
 
   const [cats, items] = await Promise.all([

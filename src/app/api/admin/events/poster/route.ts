@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { adminFromRequest } from "@/lib/admin/session";
 import { getServiceClient } from "@/lib/supabase/server";
+import { ACCESS } from "@/lib/admin/roles";
 
 export const runtime = "nodejs";
 
@@ -18,7 +19,8 @@ const fail = (message: string, status: number) =>
 
 export async function POST(req: Request) {
   try {
-    if (!(await adminFromRequest())) return fail("Please sign in again.", 401);
+    if (!(await adminFromRequest({ roles: ACCESS.events })))
+      return fail("Please sign in again.", 401);
 
     const form = await req.formData().catch(() => null);
     const file = form?.get("file");

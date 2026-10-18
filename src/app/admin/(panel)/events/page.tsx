@@ -1,10 +1,14 @@
 import EventManager from "@/components/admin/EventManager";
 import type { AdminEvent } from "@/lib/admin/eventTypes";
 import { getServiceClient } from "@/lib/supabase/server";
+import { ACCESS } from "@/lib/admin/roles";
+import { requireAdminPage } from "@/lib/admin/session";
 
 const pageLoadedAt = Date.now();
 
 export default async function AdminEventsPage() {
+  await requireAdminPage({ roles: ACCESS.events });
+  
   const supabase = getServiceClient();
   const { data, error } = await supabase
     .from("events")

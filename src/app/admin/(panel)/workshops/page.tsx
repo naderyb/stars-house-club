@@ -4,8 +4,12 @@ import type {
   AdminWorkshopOption,
 } from "@/lib/admin/workshopTypes";
 import { getServiceClient } from "@/lib/supabase/server";
+import { ACCESS } from "@/lib/admin/roles";
+import { requireAdminPage } from "@/lib/admin/session";
 
 export default async function AdminWorkshopsPage() {
+  await requireAdminPage({ roles: ACCESS.workshops });
+  
   const supabase = getServiceClient();
 
   const [ws, opts] = await Promise.all([

@@ -1,8 +1,11 @@
 import RegistrationsBoard from "@/components/admin/RegistrationsBoard";
 import type { AdminRegistration } from "@/lib/admin/types";
 import { getServiceClient } from "@/lib/supabase/server";
+import { ACCESS } from "@/lib/admin/roles";
+import { requireAdminPage } from "@/lib/admin/session";
 
 export default async function AdminHome() {
+  await requireAdminPage({ roles: ACCESS.registrations });
   const supabase = getServiceClient();
   const { data, error } = await supabase
     .from("registrations")

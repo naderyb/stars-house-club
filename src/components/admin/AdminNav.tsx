@@ -2,23 +2,17 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { navLinks, type Role } from "@/lib/admin/roles";
 import styles from "./AdminNav.module.css";
 
-const links = [
-  { href: "/admin", label: "Registrations" },
-  { href: "/admin/door", label: "Door list" },
-  { href: "/admin/menu", label: "Menu" },
-  { href: "/admin/workshops", label: "Workshops" },
-  { href: "/admin/events", label: "Events" },
-  { href: "/admin/tables", label: "Tables" },
-  { href: "/admin/stats", label: "Stats" },
-  { href: "/admin/team", label: "Team" },
-  { href: "/admin/setup", label: "My login" },
-];
-
-export default function AdminNav() {
+export default function AdminNav({ role }: { role: Role }) {
   const pathname = usePathname();
   const router = useRouter();
+
+  const links = [
+    ...navLinks.filter((l) => l.roles.includes(role)),
+    { href: "/admin/setup", label: "My login" },
+  ];
 
   const logout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });

@@ -4,6 +4,7 @@ import { normalizeUsername, STARTER } from "@/lib/admin/auth";
 import { hashPassword } from "@/lib/admin/password";
 import { adminFromRequest } from "@/lib/admin/session";
 import { getServiceClient } from "@/lib/supabase/server";
+import { ACCESS, ROLES } from "@/lib/admin/roles";
 
 export const runtime = "nodejs";
 
@@ -20,7 +21,7 @@ const password = z
   .max(100, "Password: 100 characters maximum.");
 
 const bodySchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("add"), username, password }),
+  z.object({ action: z.literal("add"), username, password, role: z.enum(ROLES) }),
   z.object({ action: z.literal("reset"), id, password }),
   z.object({ action: z.literal("remove"), id }),
 ]);
@@ -30,8 +31,7 @@ const fail = (message: string, status: number) =>
 
 export async function POST(req: Request) {
   try {
-    const session = await adminFromRequest();
-    if (!session) return fail("Please sign in again.", 401);
+    const session = await adminFromRequest({ roles: ACCESS.team });    if (!session) return fail("Please sign in again.", 401);
 
     const parsed = bodySchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
@@ -50,6 +50,7 @@ export async function POST(req: Request) {
         const { error } = await supabase.from("admins").insert({
           username: body.username,
           password_hash: await hashPassword(body.password),
+          role: body.role,
           must_change: true,
         });
         if (error) {
@@ -91,11 +92,6 @@ export async function POST(req: Request) {
         if ((count ?? 0) <= 1)
           return fail("You can't remove the last admin.", 422);
 
-        const { error } = await supabase
-          .from("admins")
-          .delete()
-          .eq("id", body.id);
-        if (error) throw error;
         break;
       }
     }

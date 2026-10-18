@@ -9,9 +9,11 @@ export default async function PanelLayout({
 }) {
   await requireAdminPage(); // not signed in -> login, starter login -> change credentials
 
+  const session = await requireAdminPage(); // not signed in -> login, starter login -> change credentials
+
   return (
     <main className={`container ${styles.page}`}>
-      <AdminNav />
+      <AdminNav role={session.role} />
       {children}
     </main>
   );

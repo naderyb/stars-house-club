@@ -1,75 +1,33 @@
-import TablesBoard from "@/components/admin/TablesBoard";
-import type {
-  AdminOrder,
-  AdminTable,
-  MenuChoice,
-  PaidOrder,
-} from "@/lib/admin/orderTypes";
-import { getTodayTotal, todayStartIso } from "@/lib/admin/stats";
-import { getServiceClient } from "@/lib/supabase/server";
+import TabsBoard from "@/components/admin/TabsBoard";
+import { ACCESS, CAN, type Role } from "@/lib/admin/roles";
+import { requireAdminPage } from "@/lib/admin/session";
+import { getTodayTotal } from "@/lib/admin/stats";
+import {
+  getMenuChoices,
+  getOpenTabs,
+  getRecentlyClosedTabs,
+} from "@/lib/admin/tabs";
 
-export default async function AdminTablesPage() {
-  const supabase = getServiceClient();
+export default async function AdminOrdersPage() {
+  const session = await requireAdminPage({ roles: ACCESS.orders });
 
-  const [tables, open, paid, menuItems, todayTotal] = await Promise.all([
-    supabase.from("restaurant_tables").select("id, number").order("number"),
-    supabase
-      .from("orders")
-      .select(
-        "id, table_id, table_label, created_at, order_items(id, name, price, qty, created_at)",
-      )
-      .eq("status", "open"),
-    supabase
-      .from("orders")
-      .select("id, table_id, table_label, total, paid_at")
-      .eq("status", "paid")
-      .gte("paid_at", todayStartIso())
-      .order("paid_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("menu_items")
-      .select("name, price")
-      .eq("available", true)
-      .order("sort")
-      .order("created_at"),
-    getTodayTotal(),
+  const isAdmin = session.role === "admin";
+  const canTake = (CAN.takeOrders as readonly Role[]).includes(session.role);
+
+  // money figures are only fetched for admins: the cashier and waiter never receive them
+  const [tabs, menu, recentlyPaid, todayTotal] = await Promise.all([
+    getOpenTabs(),
+    canTake ? getMenuChoices() : Promise.resolve([]),
+    isAdmin ? getRecentlyClosedTabs() : Promise.resolve([]),
+    isAdmin ? getTodayTotal() : Promise.resolve(null),
   ]);
 
-  if (tables.error) throw tables.error;
-  if (open.error) throw open.error;
-  if (paid.error) throw paid.error;
-  if (menuItems.error) throw menuItems.error;
-
-  const orders: AdminOrder[] = (open.data ?? []).map((o) => ({
-    id: o.id as string,
-    table_id: o.table_id as string | null,
-    table_label: o.table_label as string,
-    created_at: o.created_at as string,
-    items: [
-      ...((o.order_items ?? []) as (AdminOrder["items"][number] & {
-        created_at: string;
-      })[]),
-    ]
-      .sort((a, b) => a.created_at.localeCompare(b.created_at))
-      .map(({ id, name, price, qty }) => ({ id, name, price, qty })),
-  }));
-
-  // one entry per name, in case the same drink sits in two categories
-  const seen = new Set<string>();
-  const menu: MenuChoice[] = [];
-  for (const m of (menuItems.data ?? []) as MenuChoice[]) {
-    const key = m.name.trim().toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    menu.push({ name: m.name, price: m.price });
-  }
-
   return (
-    <TablesBoard
-      tables={(tables.data ?? []) as AdminTable[]}
-      orders={orders}
-      paidToday={(paid.data ?? []) as PaidOrder[]}
+    <TabsBoard
+      tabs={tabs}
       menu={menu}
+      role={session.role}
+      recentlyPaid={recentlyPaid}
       todayTotal={todayTotal}
     />
   );

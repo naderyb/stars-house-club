@@ -195,8 +195,8 @@ export const floors: Floor[] = [
         id: "private-area",
         number: 9,
         name: "Private Area",
-        text: "A private corner of the house. Ask the team about access.",
-        find: "Bottom right corner, behind its own door.",
+        text: "IT'S PRIVATE FOR A REASON :)",
+        find: "WHY DO YOU WANNA WHERE IT'S",
         tags: ["Private"],
         zone: [
           [81.5, 68],

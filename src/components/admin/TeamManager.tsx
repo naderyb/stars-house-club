@@ -5,14 +5,15 @@ import formStyles from "@/components/JoinForm.module.css";
 import ConfirmModal from "./ConfirmModal";
 import { useAdminCall } from "./useAdminCall";
 import styles from "./TeamManager.module.css";
+import { ROLES, roleHints, roleLabels, type Role } from "@/lib/admin/roles";
 
 export interface TeamAdmin {
   id: string;
   username: string;
+  role: Role;
   must_change: boolean;
   created_at: string;
 }
-
 interface Props {
   admins: TeamAdmin[];
   /** id of the admin who is looking at this page */
@@ -22,6 +23,7 @@ interface Props {
 interface Handoff {
   username: string;
   password: string;
+  role: Role;
   kind: "new" | "reset";
 }
 
@@ -89,6 +91,7 @@ export default function TeamManager({ admins, meId }: Props) {
   const [adding, setAdding] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<Role>("waiter");
 
   const [resetFor, setResetFor] = useState<TeamAdmin | null>(null);
   const [resetPassword, setResetPassword] = useState("");
@@ -105,6 +108,7 @@ export default function TeamManager({ admins, meId }: Props) {
     setLocalError("");
     setUsername("");
     setPassword(generatePassword());
+    setRole("waiter");
     setAdding(true);
   };
 
@@ -128,8 +132,8 @@ export default function TeamManager({ admins, meId }: Props) {
     }
     setLocalError("");
 
-    if (await call({ action: "add", username: name, password })) {
-      setHandoff({ username: name, password, kind: "new" });
+    if (await call({ action: "add", username: name, password, role })) {
+      setHandoff({ username: name, password, role, kind: "new" });
       setAdding(false);
     }
   };
@@ -150,6 +154,7 @@ export default function TeamManager({ admins, meId }: Props) {
       setHandoff({
         username: resetFor.username,
         password: resetPassword,
+        role: resetFor.role,
         kind: "reset",
       });
       setResetFor(null);
@@ -166,6 +171,7 @@ export default function TeamManager({ admins, meId }: Props) {
     if (!handoff) return;
     const text = [
       "Stars House Club admin",
+      `Role: ${roleLabels[handoff.role]}`,
       `Login: ${window.location.origin}/admin/login`,
       `Username: ${handoff.username}`,
       `Temporary password: ${handoff.password}`,
@@ -196,9 +202,9 @@ export default function TeamManager({ admins, meId }: Props) {
       </div>
 
       <p className={styles.note}>
-        Everyone here can use the whole admin panel. Give each person their own
-        login instead of sharing one, so you can remove one without affecting
-        the others.
+        Give each person their own login, with the role that fits what they do.
+        Admins see everything; waiters, cashiers and guards only see their own
+        screen.
       </p>
 
       {shownError && (
@@ -248,7 +254,7 @@ export default function TeamManager({ admins, meId }: Props) {
           onSubmit={submitAdd}
           noValidate
         >
-          <h2 className={styles.formTitle}>New admin</h2>
+          <h2 className={styles.formTitle}>New team member</h2>
 
           <div className={formStyles.field}>
             <label htmlFor="team-username" className={formStyles.label}>
@@ -268,6 +274,26 @@ export default function TeamManager({ admins, meId }: Props) {
             />
           </div>
 
+          <div className={formStyles.field}>
+            <label htmlFor="team-role" className={formStyles.label}>
+              Role
+            </label>
+            <select
+              id="team-role"
+              className={formStyles.input}
+              value={role}
+              onChange={(e) => setRole(e.target.value as Role)}
+              disabled={busy}
+            >
+              {ROLES.map((r) => (
+                <option key={r} value={r}>
+                  {roleLabels[r]}
+                </option>
+              ))}
+            </select>
+            <p className={formStyles.hint}>{roleHints[role]}</p>
+          </div>
+
           <PasswordField
             id="team-password"
             value={password}
@@ -281,7 +307,7 @@ export default function TeamManager({ admins, meId }: Props) {
               className={`btn btn--red ${styles.save}`}
               disabled={busy}
             >
-              {busy ? "Saving..." : "Create admin"}
+              {busy ? "Saving..." : "Create account"}
             </button>
             <button
               type="button"
@@ -342,6 +368,7 @@ export default function TeamManager({ admins, meId }: Props) {
             <div className={styles.who}>
               <strong className={styles.name}>{a.username}</strong>
               <div className={styles.badges}>
+                <span className={styles.badge}>{roleLabels[a.role]}</span>
                 {a.id === meId && <span className={styles.badge}>You</span>}
                 <span
                   className={styles.badge}

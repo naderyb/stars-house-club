@@ -1,0 +1,202 @@
+/* ---------- tabs grid ---------- */
+.tabGrid {
+  display: grid;
+  gap: 0.9rem 0.7rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  padding-top: 0.4rem;
+}
+
+.tab {
+  position: relative;
+}
+
+.tabMain {
+  width: 100%;
+  min-height: 92px;
+  display: grid;
+  gap: 0.15rem;
+  justify-items: center;
+  align-content: center;
+  padding: 0.9rem 0.5rem 0.7rem;
+  font: 800 0.85rem var(--font-body);
+  color: var(--ink);
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble-soft);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabMain strong {
+  font: 400 1.25rem var(--font-display);
+  line-height: 1.1;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.tabMain small {
+  font-weight: 700;
+  opacity: 0.65;
+}
+
+.tabMain:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.tab[data-state="owed"] .tabMain {
+  background: var(--yellow);
+}
+
+.tab[data-state="paid"] .tabMain {
+  background: #b9efc8;
+}
+
+.tab[data-selected="true"] .tabMain {
+  background: var(--red);
+  color: var(--cream);
+}
+
+/* round tick-box in the corner: "pay this tab with the others" */
+.check {
+  position: absolute;
+  top: -10px;
+  left: -8px;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.check input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--red);
+  cursor: pointer;
+}
+
+/* ---------- pay bar ---------- */
+.payBar {
+  position: sticky;
+  bottom: 0.75rem;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.8rem 1rem;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble-soft);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.payBar strong {
+  font: 400 1.4rem var(--font-display);
+}
+
+.payBarActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* ---------- share an item ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 1rem;
+  font: 800 0.85rem var(--font-body);
+  color: var(--ink);
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--red);
+  color: var(--cream);
+}
+
+.shareForm {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.shareRow {
+  display: grid;
+  gap: 0.8rem;
+}
+
+@media (min-width: 700px) {
+  .shareRow {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* ---------- selected tab ---------- */
+.badge {
+  display: inline-block;
+  margin-inline: 0.3rem;
+  padding: 0.05rem 0.5rem;
+  font: 800 0.65rem var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  background: #e4e4e4;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+}
+
+.badge[data-tone="paid"] {
+  background: #b9efc8;
+}
+
+.paidLine {
+  opacity: 0.65;
+}
+
+.lineActions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.rename {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+.rename > div {
+  flex: 1 1 180px;
+}
+
+.headTools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sub {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}

@@ -127,3 +127,41 @@ h3 {
   html { scroll-behavior: auto; }
   .btn { transition: none; }
 }
+
+/* ---------- sketchbook scrollbar ---------- */
+html {
+  scrollbar-gutter: auto;
+}
+
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--denim-deep);
+  border-left: 3px solid var(--ink);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--denim-deep);
+}
+
+/* Firefox only supports the simple version. Chrome and Safari ignore this block,
+   because setting scrollbar-color there would switch off the chunky style above. */
+@supports (-moz-appearance: none) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--yellow) var(--denim-deep);
+  }
+}

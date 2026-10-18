@@ -11,21 +11,47 @@ const startOfDay = (key: string) => new Date(`${key}T00:00:00+01:00`).getTime();
 export const todayStartIso = () =>
   new Date(startOfDay(dayKeyOf(Date.now()))).toISOString();
 
-export async function getTodayTotal() {
+interface PaidRow {
+  tab_id: string;
+  name: string;
+  price: number;
+  qty: number;
+  paid_at: string;
+}
+
+/** Every paid line since a moment. Read in pages of 1000, which is the most
+ *  the database sends at once, so busy months are never cut short. */
+async function paidItemsSince(sinceIso: string): Promise<PaidRow[]> {
   const supabase = getServiceClient();
-  const { data, error } = await supabase
-    .from("orders")
-    .select("total")
-    .eq("status", "paid")
-    .gte("paid_at", todayStartIso());
-  if (error) throw error;
-  return (data ?? []).reduce((sum, o) => sum + (o.total as number), 0);
+  const PAGE = 1000;
+  const rows: PaidRow[] = [];
+
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("tab_items")
+      .select("tab_id, name, price, qty, paid_at")
+      .not("paid_at", "is", null)
+      .gte("paid_at", sinceIso)
+      .order("paid_at")
+      .order("id")
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    rows.push(...((data ?? []) as PaidRow[]));
+    if (!data || data.length < PAGE) break;
+  }
+  return rows;
+}
+
+export async function getTodayTotal() {
+  const rows = await paidItemsSince(todayStartIso());
+  return rows.reduce((sum, r) => sum + r.price * r.qty, 0);
 }
 
 export interface DayTotal {
   key: string;
   label: string;
   total: number;
+  /** number of tabs that paid something that day */
   orders: number;
 }
 
@@ -54,40 +80,51 @@ export async function getStats(): Promise<Stats> {
   );
   const since = Math.min(monthStart, startOfDay(weekKeys[0]));
 
-  const [paid, todayItems, open] = await Promise.all([
+  const [paid, unpaid, openTabs] = await Promise.all([
+    paidItemsSince(new Date(since).toISOString()),
+    // what is still owed (a few hundred lines at most, so one read is enough)
     supabase
-      .from("orders")
-      .select("total, paid_at")
-      .eq("status", "paid")
-      .gte("paid_at", new Date(since).toISOString())
-      .limit(5000),
+      .from("tab_items")
+      .select("price, qty")
+      .is("paid_at", null)
+      .range(0, 4999),
     supabase
-      .from("orders")
-      .select("order_items(name, price, qty)")
-      .eq("status", "paid")
-      .gte("paid_at", new Date(todayStart).toISOString()),
-    supabase
-      .from("orders")
-      .select("order_items(price, qty)")
+      .from("tabs")
+      .select("id", { count: "exact", head: true })
       .eq("status", "open"),
   ]);
-  if (paid.error) throw paid.error;
-  if (todayItems.error) throw todayItems.error;
-  if (open.error) throw open.error;
+  if (unpaid.error) throw unpaid.error;
+  if (openTabs.error) throw openTabs.error;
 
-  const byDay = new Map<string, { total: number; orders: number }>();
+  const byDay = new Map<string, { total: number; tabs: Set<string> }>();
+  const monthTabs = new Set<string>();
   let monthTotal = 0;
-  let monthOrders = 0;
-  for (const o of paid.data ?? []) {
-    const ms = new Date(o.paid_at as string).getTime();
+  const items = new Map<
+    string,
+    { name: string; qty: number; revenue: number }
+  >();
+
+  for (const r of paid) {
+    const ms = new Date(r.paid_at).getTime();
+    const amount = r.price * r.qty;
     const key = dayKeyOf(ms);
-    const day = byDay.get(key) ?? { total: 0, orders: 0 };
-    day.total += o.total as number;
-    day.orders += 1;
+
+    const day = byDay.get(key) ?? { total: 0, tabs: new Set<string>() };
+    day.total += amount;
+    day.tabs.add(r.tab_id);
     byDay.set(key, day);
+
     if (ms >= monthStart) {
-      monthTotal += o.total as number;
-      monthOrders += 1;
+      monthTotal += amount;
+      monthTabs.add(r.tab_id);
+    }
+
+    if (ms >= todayStart) {
+      const itemKey = r.name.trim().toLowerCase();
+      const row = items.get(itemKey) ?? { name: r.name, qty: 0, revenue: 0 };
+      row.qty += r.qty;
+      row.revenue += amount;
+      items.set(itemKey, row);
     }
   }
 
@@ -95,34 +132,14 @@ export async function getStats(): Promise<Stats> {
     key,
     label: labelFmt.format(new Date(`${key}T12:00:00Z`)),
     total: byDay.get(key)?.total ?? 0,
-    orders: byDay.get(key)?.orders ?? 0,
+    orders: byDay.get(key)?.tabs.size ?? 0,
   }));
   const today = week[week.length - 1];
 
-  const items = new Map<
-    string,
-    { name: string; qty: number; revenue: number }
-  >();
-  for (const order of todayItems.data ?? []) {
-    for (const i of (order.order_items ?? []) as {
-      name: string;
-      price: number;
-      qty: number;
-    }[]) {
-      const key = i.name.trim().toLowerCase();
-      const row = items.get(key) ?? { name: i.name, qty: 0, revenue: 0 };
-      row.qty += i.qty;
-      row.revenue += i.qty * i.price;
-      items.set(key, row);
-    }
-  }
-
-  let openTotal = 0;
-  for (const o of open.data ?? []) {
-    for (const i of (o.order_items ?? []) as { price: number; qty: number }[]) {
-      openTotal += i.price * i.qty;
-    }
-  }
+  const openTotal = (unpaid.data ?? []).reduce(
+    (sum, i) => sum + (i.price as number) * (i.qty as number),
+    0,
+  );
 
   return {
     today: {
@@ -130,9 +147,9 @@ export async function getStats(): Promise<Stats> {
       orders: today.orders,
       average: today.orders ? Math.round(today.total / today.orders) : 0,
     },
-    open: { total: openTotal, tables: (open.data ?? []).length },
+    open: { total: openTotal, tables: openTabs.count ?? 0 },
     week,
-    month: { total: monthTotal, orders: monthOrders },
+    month: { total: monthTotal, orders: monthTabs.size },
     topItems: Array.from(items.values())
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 8),
