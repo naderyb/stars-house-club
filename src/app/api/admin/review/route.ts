@@ -10,7 +10,7 @@ const STATUSES = ["pending", "accepted", "rejected"];
 
 export async function POST(req: Request) {
   try {
-    if (!(await adminFromRequest({ roles: ACCESS.registrations }))) {
+    if (!(await adminFromRequest({ roles: ACCESS.review }))) {
       return NextResponse.json(
         { ok: false, message: "Please sign in again." },
         { status: 401 },

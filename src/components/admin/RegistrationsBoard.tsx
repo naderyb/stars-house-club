@@ -14,8 +14,16 @@ const TABS: { id: Status; label: string }[] = [
 
 export default function RegistrationsBoard({
   initial,
+  canDecide,
+  canViewId,
+  canErase,
+  canBan,
 }: {
   initial: AdminRegistration[];
+  canDecide: boolean;
+  canViewId: boolean;
+  canErase: boolean;
+  canBan: boolean;
 }) {
   const router = useRouter();
   const [items, setItems] = useState(initial);
@@ -43,6 +51,44 @@ export default function RegistrationsBoard({
       setError(
         "Could not save the decision. Check your connection and try again.",
       );
+    }
+  };
+
+  const erase = async (id: string) => {
+    setError("");
+    try {
+      const res = await fetch("/api/admin/erase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error();
+      setItems((list) =>
+        list.map((r) => (r.id === id ? { ...r, has_id: false } : r)),
+      );
+    } catch {
+      setError("Could not delete the ID. Please try again.");
+    }
+  };
+
+  const ban = async (id: string, banned: boolean, reason: string) => {
+    setError("");
+    try {
+      const res = await fetch("/api/admin/ban", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, banned, reason }),
+      });
+      if (!res.ok) throw new Error();
+      setItems((list) =>
+        list.map((r) =>
+          r.id === id
+            ? { ...r, banned, ban_reason: banned ? reason.trim() || null : null }
+            : r,
+        ),
+      );
+    } catch {
+      setError("Could not save the ban. Please try again.");
     }
   };
 
@@ -105,7 +151,17 @@ export default function RegistrationsBoard({
       ) : (
         <div className={styles.list}>
           {list.map((r) => (
-            <RegistrationCard key={r.id} reg={r} onReview={review} />
+            <RegistrationCard
+              key={r.id}
+              reg={r}
+              onReview={review}
+              canDecide={canDecide}
+              canViewId={canViewId}
+              canErase={canErase}
+              onErase={erase}
+              canBan={canBan}
+              onBan={ban}
+            />
           ))}
         </div>
       )}

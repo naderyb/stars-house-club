@@ -1,6 +1,6 @@
 import TeamManager, { type TeamAdmin } from "@/components/admin/TeamManager";
 import { getServiceClient } from "@/lib/supabase/server";
-import { ACCESS } from "@/lib/admin/roles";
+import { ACCESS, type Role } from "@/lib/admin/roles";
 import { requireAdminPage } from "@/lib/admin/session";
 
 export default async function AdminTeamPage() {
@@ -13,5 +13,11 @@ export default async function AdminTeamPage() {
     .order("created_at");
   if (error) throw error;
 
-  return <TeamManager admins={(data ?? []) as TeamAdmin[]} meId={session.id} />;
+  return (
+    <TeamManager
+      admins={(data ?? []) as TeamAdmin[]}
+      meId={session.id}
+      readOnly={!(ACCESS.teamEdit as readonly Role[]).includes(session.role)}
+    />
+  );
 }

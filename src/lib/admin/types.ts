@@ -15,6 +15,10 @@ export interface AdminRegistration {
   art_type_other: string | null;
   portfolio_url: string | null;
   proof_count: number;
+  /** an ID picture is on file (older registrations and expired ones have none) */
+  has_id: boolean;
+  banned: boolean;
+  ban_reason: string | null;
   status: Status;
 }
 
@@ -28,5 +32,8 @@ export type DoorPerson = Pick<
   | "phone"
   | "email"
   | "instagram"
+  | "has_id"
+  | "banned"
+  | "ban_reason"
 >;
     

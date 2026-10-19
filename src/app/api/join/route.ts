@@ -6,6 +6,7 @@ import { getServiceClient } from "@/lib/supabase/server";
 export const runtime = "nodejs";
 
 const BUCKET = "proofs";
+const ID_BUCKET = "ids";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const fail = (
@@ -68,6 +69,24 @@ export async function POST(req: Request) {
       proofPaths = d.proofPaths;
     }
 
+    // national ID: make sure the picture really is in our private storage
+    const idUploadId = String(body.idUploadId ?? "");
+    const idPrefix = `pending/${idUploadId}/`;
+    if (
+      !UUID.test(idUploadId) ||
+      !d.idPath.startsWith(idPrefix) ||
+      d.idPath.slice(idPrefix.length).includes("/")
+    ) {
+      return fail("Your ID picture could not be verified. Please try again.", 400);
+    }
+    const { data: idListed, error: idListError } = await supabase.storage
+      .from(ID_BUCKET)
+      .list(`pending/${idUploadId}`);
+    if (idListError) throw idListError;
+    if (!(idListed ?? []).some((f) => `${idPrefix}${f.name}` === d.idPath)) {
+      return fail("Your ID picture didn't finish uploading. Please try again.", 400);
+    }
+
     // already registered with this number?
     const { data: duplicate } = await supabase
       .from("registrations")
@@ -101,6 +120,8 @@ export async function POST(req: Request) {
       portfolio_url: clean.portfolioUrl || null,
       detail: clean.detail || null,
       proof_paths: proofPaths,
+      id_path: d.idPath,
+      data_consent_at: new Date().toISOString(),
     });
 
     if (insertError) {

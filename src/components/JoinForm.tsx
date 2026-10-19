@@ -18,6 +18,7 @@ import {
 } from "@/lib/join/schema";
 import { buzz } from "@/lib/haptics";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
+import IdUploader from "./IdUploader";
 import ProofUploader from "./ProofUploader";
 import StarLogo from "./StarLogo";
 import styles from "./JoinForm.module.css";
@@ -34,6 +35,7 @@ const EMPTY = {
   portfolioUrl: "",
   detail: "",
   consent: false,
+  dataConsent: false,
   website: "", // honeypot
 };
 
@@ -77,6 +79,8 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
 
   const [values, setValues] = useState<Values>(EMPTY);
   const [files, setFiles] = useState<File[]>([]);
+  const [idFile, setIdFile] = useState<File | null>(null);
+  const [stage, setStage] = useState<"id" | "art">("id");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
   const [progress, setProgress] = useState(0);
@@ -95,7 +99,7 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
       if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
     };
 
-  const buildPayload = (proofPaths: string[]) => ({
+  const buildPayload = (proofPaths: string[], idPath: string) => ({
     role: role.id,
     fullName: values.fullName,
     stageName: values.stageName,
@@ -108,6 +112,8 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
     portfolioUrl: values.portfolioUrl,
     detail: values.detail,
     consent: values.consent,
+    dataConsent: values.dataConsent,
+    idPath,
     proofPaths,
   });
 
@@ -146,13 +152,44 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
     };
   };
 
+  const uploadIdCard = async () => {
+    if (!idFile) throw new Error("Add a picture of your national ID.");
+
+    const res = await fetch("/api/join/id-upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        file: { name: idFile.name, type: idFile.type, size: idFile.size },
+      }),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data?.ok) {
+      throw new Error(
+        data?.message ?? "Could not prepare your upload. Please try again.",
+      );
+    }
+
+    const supabase = createBrowserSupabase();
+    const { error } = await supabase.storage
+      .from("ids")
+      .uploadToSignedUrl(data.path, data.token, idFile, {
+        contentType: idFile.type,
+      });
+    if (error)
+      throw new Error("Upload failed. Check your connection and try again.");
+
+    return { idUploadId: data.uploadId as string, idPath: data.path as string };
+  };
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (busy) return;
     setServerError("");
 
     // file names stand in for the real paths, which exist only after the upload
-    const check = joinSchema.safeParse(buildPayload(files.map((f) => f.name)));
+    const check = joinSchema.safeParse(
+      buildPayload(files.map((f) => f.name), idFile?.name ?? ""),
+    );
     if (!check.success) {
       const found = fieldErrors(check.error);
       setErrors(found);
@@ -169,8 +206,12 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
       let proofPaths: string[] = [];
       let uploadId = "";
 
+      setStatus("uploading");
+      setStage("id");
+      const idUpload = await uploadIdCard();
+
       if (isArtist) {
-        setStatus("uploading");
+        setStage("art");
         setProgress(0);
         ({ proofPaths, uploadId } = await uploadProofs());
       }
@@ -180,8 +221,9 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...buildPayload(proofPaths),
+          ...buildPayload(proofPaths, idUpload.idPath),
           uploadId,
+          idUploadId: idUpload.idUploadId,
           website: values.website,
         }),
       });
@@ -241,7 +283,9 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
 
   const submitLabel =
     status === "uploading"
-      ? `Uploading your art (${progress}/${files.length})...`
+      ? stage === "id"
+        ? "Uploading your ID..."
+        : `Uploading your art (${progress}/${files.length})...`
       : status === "sending"
         ? "Sending..."
         : "Send my registration";
@@ -523,6 +567,23 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
         </p>
       </Field>
 
+      <Field
+        id="idCard"
+        label="National ID"
+        hint="We check it at the door, so everyone who enters has to show one."
+        error={errors.idCard}
+      >
+        <IdUploader
+          file={idFile}
+          onChange={(next) => {
+            setIdFile(next);
+            if (errors.idCard) setErrors((prev) => ({ ...prev, idCard: "" }));
+          }}
+          error={errors.idCard}
+          disabled={busy}
+        />
+      </Field>
+
       {/* ---------- consent ---------- */}
       <div className={styles.field}>
         <label className={styles.check}>
@@ -547,6 +608,36 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
         {errors.consent && (
           <p id="error-consent" className={styles.error} role="alert">
             {errors.consent}
+          </p>
+        )}
+      </div>
+
+      <div className={styles.field}>
+        <label className={styles.check}>
+          <input
+            id="field-dataConsent"
+            type="checkbox"
+            checked={values.dataConsent}
+            onChange={(e) => {
+              setValues((v) => ({ ...v, dataConsent: e.target.checked }));
+              if (errors.dataConsent)
+                setErrors((prev) => ({ ...prev, dataConsent: "" }));
+            }}
+            aria-invalid={!!errors.dataConsent}
+            aria-describedby={describe("dataConsent")}
+            disabled={busy}
+          />
+          <span>
+            I agree that Stars House Club keeps my personal data private and
+            uses it only to welcome me among them.{" "}
+            <Link href="/privacy" target="_blank">
+              How we protect it
+            </Link>
+          </span>
+        </label>
+        {errors.dataConsent && (
+          <p id="error-dataConsent" className={styles.error} role="alert">
+            {errors.dataConsent}
           </p>
         )}
       </div>
@@ -578,7 +669,7 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
         {submitLabel}
       </button>
 
-      {busy && isArtist && (
+      {busy && (
         <p className={`script ${styles.wait}`}>
           keep this page open until it&apos;s done
         </p>

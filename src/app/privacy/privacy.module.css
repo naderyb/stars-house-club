@@ -1,0 +1,23 @@
+.page {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: 2rem 3rem;
+  }
+  
+  .list {
+    display: grid;
+    gap: 1rem;
+    max-width: 720px;
+  }
+  
+  .card {
+    display: grid;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+  
+  .title {
+    font-size: 1.4rem;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--ink);
+  }

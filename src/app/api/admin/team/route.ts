@@ -31,7 +31,7 @@ const fail = (message: string, status: number) =>
 
 export async function POST(req: Request) {
   try {
-    const session = await adminFromRequest({ roles: ACCESS.team });    if (!session) return fail("Please sign in again.", 401);
+    const session = await adminFromRequest({ roles: ACCESS.teamEdit });    if (!session) return fail("Please sign in again.", 401);
 
     const parsed = bodySchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
@@ -85,13 +85,13 @@ export async function POST(req: Request) {
         if (body.id === session.id)
           return fail("You can't remove your own account.", 422);
 
-        const { count, error: countError } = await supabase
+        const { data, error } = await supabase
           .from("admins")
-          .select("id", { count: "exact", head: true });
-        if (countError) throw countError;
-        if ((count ?? 0) <= 1)
-          return fail("You can't remove the last admin.", 422);
-
+          .delete()
+          .eq("id", body.id)
+          .select("id");
+        if (error) throw error;
+        if (!data || data.length === 0) return fail("Admin not found.", 404);
         break;
       }
     }

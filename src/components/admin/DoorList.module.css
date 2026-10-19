@@ -137,3 +137,24 @@
     max-width: 320px;
     text-align: center;
   }
+
+/* the name is now a button: tap it to open the person's popup */
+.who {
+  min-height: 44px;
+  align-content: center;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* banned: the whole row turns red, the rest of the styles can't hide it */
+.row[data-banned="true"] {
+  background: #ffd0d0;
+  border-color: var(--red);
+  border-left-color: var(--red);
+}

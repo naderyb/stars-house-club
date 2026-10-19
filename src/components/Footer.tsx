@@ -101,7 +101,8 @@ export default function Footer() {
       <div className={`container ${styles.bottom}`}>
         <div className={styles.legal}>
           <p>
-            © {new Date().getFullYear()} {siteConfig.name}
+            © {new Date().getFullYear()} {siteConfig.name} ·{" "}
+            <Link href="/privacy">Privacy</Link>
           </p>
           <p className={styles.credit}>
             Made with ♥ in {siteConfig.city} by{" "}

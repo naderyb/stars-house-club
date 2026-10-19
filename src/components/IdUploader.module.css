@@ -1,0 +1,102 @@
+.wrap {
+    display: grid;
+    gap: 0.6rem;
+  }
+  
+  .buttons {
+    display: grid;
+    gap: 0.6rem;
+  }
+  
+  @media (min-width: 480px) {
+    .buttons {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .pick {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    font: 800 0.95rem var(--font-body);
+    color: var(--ink);
+    background: #fff;
+    border: 3px dashed var(--ink);
+    border-radius: var(--wobble-soft);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .pick:active:not(:disabled) {
+    transform: scale(0.98);
+    background: var(--yellow);
+  }
+  
+  .pick:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .pick[data-invalid="true"] {
+    border-color: var(--red);
+  }
+  
+  .hint {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    opacity: 0.75;
+  }
+  
+  .preview {
+    display: grid;
+    gap: 0.6rem;
+    padding: 0.6rem;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble-soft);
+  }
+  
+  .image {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+  }
+  
+  .previewActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  
+  .previewActions small {
+    font-weight: 700;
+    opacity: 0.75;
+  }
+  
+  .smallBtn {
+    min-height: 44px;
+    padding: 0 1rem;
+    font: 800 0.8rem var(--font-body);
+    color: var(--ink);
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  
+  .smallBtn:disabled {
+    opacity: 0.5;
+  }
+  
+  .note {
+    font: 800 0.85rem var(--font-body);
+    color: var(--red);
+  }

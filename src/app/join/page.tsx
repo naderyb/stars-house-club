@@ -11,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 const steps = [
-  { title: "Register", text: "Pick visitor or artist and tell us about you." },
+  {
+    title: "Register",
+    text: "Tell us about you and add a picture of your national ID.",
+  },
   {
     title: "We review",
     text: "We check every registration, and every artist's name.",

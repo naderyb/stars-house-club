@@ -14,6 +14,17 @@ export const PROOF_TYPES = [...IMAGE_TYPES, ...VIDEO_TYPES];
 
 const MB = 1024 * 1024;
 
+export const ID_TYPES = ["image/jpeg", "image/png", "image/webp"];
+export const MAX_ID_MB = 8;
+
+/** Returns an error message, or null when the ID picture is fine */
+export function checkIdMeta(file: FileMeta): string | null {
+  if (!ID_TYPES.includes(file.type)) return "Please use a JPG, PNG or WebP picture.";
+  if (file.size === 0) return "The picture is empty.";
+  if (file.size > MAX_ID_MB * MB) return `The picture is too big (max ${MAX_ID_MB} MB).`;
+  return null;
+}
+
 export const countWords = (text: string) =>
   text.trim().split(/\s+/).filter(Boolean).length;
 
@@ -81,6 +92,8 @@ export const joinSchema = z
     detail: z.string(),
     consent: z.boolean(),
     proofPaths: z.array(z.string()),
+    idPath: z.string(),
+    dataConsent: z.boolean(),
   })
   .superRefine((d, ctx) => {
     const add = (path: string, message: string) =>
@@ -148,6 +161,8 @@ export const joinSchema = z
       add("portfolioUrl", "Add a link to your work");
 
     if (!d.consent) add("consent", "Please tick this box to continue");
+    if (!d.idPath) add("idCard", "Add a picture of your national ID to continue");
+    if (!d.dataConsent) add("dataConsent", "Please tick this box to continue");
   });
 
 export type JoinInput = z.infer<typeof joinSchema>;

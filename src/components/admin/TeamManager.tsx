@@ -18,6 +18,7 @@ interface Props {
   admins: TeamAdmin[];
   /** id of the admin who is looking at this page */
   meId: string;
+  readOnly: boolean;
 }
 
 interface Handoff {
@@ -85,7 +86,7 @@ function PasswordField({ id, value, onChange, disabled }: PasswordFieldProps) {
   );
 }
 
-export default function TeamManager({ admins, meId }: Props) {
+export default function TeamManager({ admins, meId, readOnly }: Props) {
   const { call, busy, error } = useAdminCall("/api/admin/team");
 
   const [adding, setAdding] = useState(false);
@@ -163,8 +164,10 @@ export default function TeamManager({ admins, meId }: Props) {
 
   const confirmRemove = async () => {
     if (!removeFor) return;
-    await call({ action: "remove", id: removeFor.id });
-    setRemoveFor(null); // on failure the message shows at the top of the page
+    const ok = await call({ action: "remove", id: removeFor.id });
+    setRemoveFor(null);
+    // the error message sits at the top of the page: bring it into view
+    if (!ok) window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const copyHandoff = async () => {
@@ -191,20 +194,22 @@ export default function TeamManager({ admins, meId }: Props) {
     <div className={styles.wrap}>
       <div className={styles.top}>
         <h1 className={styles.title}>Team</h1>
-        <button
-          type="button"
-          className={styles.add}
-          onClick={openAdd}
-          disabled={busy}
-        >
-          + Add an admin
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            className={styles.add}
+            onClick={openAdd}
+            disabled={busy}
+          >
+            + Add an admin
+          </button>
+        )}
       </div>
 
       <p className={styles.note}>
-        Give each person their own login, with the role that fits what they do.
-        Admins see everything; waiters, cashiers and guards only see their own
-        screen.
+        {readOnly
+          ? "You can see who is on the team. Only an admin can add, change or remove people."
+          : "Give each person their own login, with the role that fits what they do. Admins see everything; waiters, cashiers and guards only see their own screen."}
       </p>
 
       {shownError && (
@@ -248,7 +253,7 @@ export default function TeamManager({ admins, meId }: Props) {
         </section>
       )}
 
-      {adding && (
+      {adding && !readOnly && (
         <form
           className={`paper ${styles.form}`}
           onSubmit={submitAdd}
@@ -321,7 +326,7 @@ export default function TeamManager({ admins, meId }: Props) {
         </form>
       )}
 
-      {resetFor && (
+      {resetFor && !readOnly && (
         <form
           className={`paper ${styles.form}`}
           onSubmit={submitReset}
@@ -379,7 +384,7 @@ export default function TeamManager({ admins, meId }: Props) {
               </div>
             </div>
 
-            {a.id !== meId && (
+            {!readOnly && a.id !== meId && (
               <div className={styles.tools}>
                 <button
                   type="button"
