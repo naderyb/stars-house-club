@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { AdminRegistration, Role, Status } from "@/lib/admin/types";
 import RegistrationCard from "./RegistrationCard";
+import RegistrationSearchModal from "./RegistrationSearchModal";
 import styles from "./RegistrationsBoard.module.css";
 
 const TABS: { id: Status; label: string }[] = [
@@ -30,6 +31,7 @@ export default function RegistrationsBoard({
   const [tab, setTab] = useState<Status>("pending");
   const [role, setRole] = useState<"all" | Role>("all");
   const [error, setError] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const review = async (id: string, status: Status) => {
     setError("");
@@ -95,6 +97,17 @@ export default function RegistrationsBoard({
   const inRole = items.filter((r) => role === "all" || r.role === role);
   const list = inRole.filter((r) => r.status === tab);
 
+  const selectSearchResult = (registration: AdminRegistration) => {
+    setTab(registration.status);
+    setRole(registration.role);
+    setSearchOpen(false);
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`registration-${registration.id}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
   return (
     <div className={styles.board}>
       <div className={styles.top}>
@@ -132,6 +145,13 @@ export default function RegistrationsBoard({
           ))}
           <button
             type="button"
+            className={styles.search}
+            onClick={() => setSearchOpen(true)}
+          >
+            Search
+          </button>
+          <button
+            type="button"
             className={styles.refresh}
             onClick={() => router.refresh()}
           >
@@ -164,6 +184,14 @@ export default function RegistrationsBoard({
             />
           ))}
         </div>
+      )}
+
+      {searchOpen && (
+        <RegistrationSearchModal
+          registrations={items}
+          onSelect={selectSearchResult}
+          onClose={() => setSearchOpen(false)}
+        />
       )}
     </div>
   );

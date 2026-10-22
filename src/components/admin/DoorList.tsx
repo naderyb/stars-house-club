@@ -3,17 +3,12 @@
 import { useMemo, useState } from "react";
 import type { DoorPerson, Role } from "@/lib/admin/types";
 import { BannedBadge } from "./BanParts";
+import DoorSearchModal from "./DoorSearchModal";
 import PersonSheet from "./PersonSheet";
 import { RoleBadge, StatusBadge } from "./StatusBadge";
 import styles from "./DoorList.module.css";
 
 /** lowercase and strip accents, so "Amélie" matches "amelie" */
-const fold = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-
 type Filter = "all" | Role | "banned";
 
 const LABELS: Record<Filter, string> = {
@@ -32,32 +27,19 @@ export default function DoorList({
 }) {
   const [people, setPeople] = useState(initial);
   const [error, setError] = useState("");
-  const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const selected = people.find((p) => p.id === selectedId) ?? null;
 
   const matches = (p: DoorPerson, f: Filter) =>
     f === "all" ? true : f === "banned" ? p.banned : p.role === f;
 
   const results = useMemo(() => {
-    const q = fold(query.trim());
-    const digits = query.replace(/\D/g, "").replace(/^0+/, "");
-
     return people.filter((p) => {
-      if (!matches(p, filter)) return false;
-      if (!q) return true;
-
-      const text = fold(
-        [p.full_name, p.stage_name, p.email, p.instagram]
-          .filter(Boolean)
-          .join(" "),
-      );
-      const phoneHit =
-        digits.length >= 4 && p.phone.replace(/\D/g, "").includes(digits);
-      return text.includes(q) || phoneHit;
+      return matches(p, filter);
     });
-  }, [people, query, filter]);
+  }, [people, filter]);
 
   const count = (f: Filter) => people.filter((p) => matches(p, f)).length;
 
@@ -85,15 +67,13 @@ export default function DoorList({
   return (
     <div className={styles.wrap}>
       <div className={styles.controls}>
-        <input
-          type="search"
+        <button
+          type="button"
           className={styles.search}
-          placeholder="Search by name or email"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search the door list"
-          autoComplete="off"
-        />
+          onClick={() => setSearchOpen(true)}
+        >
+          Search
+        </button>
 
         <div className={styles.chips}>
           {(["all", "artist", "visitor", "banned"] as const).map((f) => (
@@ -164,6 +144,17 @@ export default function DoorList({
           onClose={() => setSelectedId(null)}
           canBan={canBan}
           onBan={ban}
+        />
+      )}
+
+      {searchOpen && (
+        <DoorSearchModal
+          people={people}
+          onSelect={(person) => {
+            setSelectedId(person.id);
+            setSearchOpen(false);
+          }}
+          onClose={() => setSearchOpen(false)}
         />
       )}
     </div>

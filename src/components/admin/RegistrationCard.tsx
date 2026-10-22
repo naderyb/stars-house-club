@@ -66,6 +66,7 @@ export default function RegistrationCard({
 
   return (
     <article
+      id={`registration-${reg.id}`}
       className={`paper ${styles.card}`}
       style={
         reg.banned

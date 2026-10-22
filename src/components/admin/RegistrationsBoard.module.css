@@ -55,6 +55,7 @@
   }
   
   .chip,
+  .search,
   .refresh {
     min-height: 44px;
     padding: 0 1rem;
@@ -63,6 +64,10 @@
     border: 2px solid var(--ink);
     border-radius: 999px;
     cursor: pointer;
+  }
+
+  .search {
+    background: var(--yellow);
   }
   
   .chip[aria-pressed="true"] {

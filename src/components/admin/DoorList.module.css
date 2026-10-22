@@ -10,15 +10,18 @@
   }
   
   .search {
-    width: 100%;
-    min-height: 52px;
-    padding: 0.7rem 1rem;
-    font: 600 16px var(--font-body);
-    background: #fff;
-    border: 3px solid var(--ink);
-    border-radius: var(--wobble-soft);
-    box-shadow: 3px 3px 0 var(--ink);
-  }
+      width: fit-content;
+      min-height: 44px;
+      padding: 0 1.15rem;
+      font: 700 0.85rem var(--font-body);
+      color: var(--ink);
+      background: var(--yellow);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      box-shadow: 2px 2px 0 var(--ink);
+      cursor: pointer;
+      text-align: center;
+    }
   
   .search:focus-visible {
     outline: 3px dashed var(--red);
