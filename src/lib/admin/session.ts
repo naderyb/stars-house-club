@@ -7,7 +7,7 @@ import { STARTER_ID } from "./auth";
 import { roleHome, type Role } from "./roles";
 
 export const SESSION_COOKIE = "shc_admin";
-const MAX_AGE = 60 * 60 * 8; // 8 hours
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 10; // 10 years; logout is explicit
 
 interface TokenPayload {
   /** admin id, or "starter" while no account exists yet */
@@ -15,7 +15,6 @@ interface TokenPayload {
   /** password version: changes whenever the password is changed or reset,
    *  which logs out every device that still has the old one */
   pv: number;
-  exp: number;
 }
 
 export interface AdminSession {
@@ -49,7 +48,6 @@ export function createSessionToken(adminId: string, passwordVersion: number) {
   const payload: TokenPayload = {
     aid: adminId,
     pv: passwordVersion,
-    exp: Math.floor(Date.now() / 1000) + MAX_AGE,
   };
   const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
   return `${body}.${sign(body)}`;
@@ -70,8 +68,7 @@ function readSessionToken(token?: string): TokenPayload | null {
     ) as TokenPayload;
     const valid =
       typeof payload.aid === "string" &&
-      typeof payload.pv === "number" &&
-      payload.exp > Date.now() / 1000;
+      typeof payload.pv === "number";
     return valid ? payload : null;
   } catch {
     return null;
@@ -83,7 +80,7 @@ export const cookieOptions = {
   secure: process.env.NODE_ENV === "production",
   sameSite: "strict" as const,
   path: "/",
-  maxAge: MAX_AGE,
+  maxAge: COOKIE_MAX_AGE,
 };
 
 /** Reads the cookie AND checks the account still exists and the password
