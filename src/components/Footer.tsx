@@ -8,8 +8,8 @@ import styles from "./Footer.module.css";
 
 const socials = [
   { label: "Instagram", href: siteConfig.instagram },
-  // { label: "TikTok", href: siteConfig.tiktok },
-  { label: "WhatsApp", href: siteConfig.whatsapp },
+  { label: "TikTok", href: siteConfig.tiktok },
+  // { label: "WhatsApp", href: siteConfig.whatsapp },
 ];
 
 export default function Footer() {

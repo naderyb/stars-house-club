@@ -8,7 +8,7 @@ export const siteConfig = {
     "https://www.tiktok.com/@stars.house.club?is_from_webapp=1&sender_device=pc",
   whatsapp: `https://wa.me/${process.env.WHATSAPP_PHONE}`,
   mapsUrl: "https://maps.app.goo.gl/SfytPhe8b5jAUMVF6",
-  developer: "YOUB Nader aka HCHICHA",
+  developer: "YOUB Nader aka hchicha",
   developerInstagram: "https://instagram.com/notnadertho",
   url: "https://starshouseclub.vercel.app",
   /** true = join is switched off and people see the "back soon" popup */
