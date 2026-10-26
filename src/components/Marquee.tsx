@@ -10,7 +10,7 @@ export default function Marquee() {
           <ul key={n} className={styles.group}>
             {ITEMS.concat(ITEMS).map((item, i) => (
               <li key={`${n}-${i}`}>
-                {item} <span className={styles.star}>★</span>
+                {item} <span aria-hidden="true">·</span>
               </li>
             ))}
           </ul>

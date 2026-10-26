@@ -38,7 +38,7 @@ export const roleHome: Record<Role, string> = {
 export const ACCESS = {
   /** see the registrations list */
   registrations: ["admin", "manager"],
-  /** accept / reject + the WhatsApp messages */
+  /** accept or reject registrations */
   review: ["admin"],
   door: ["admin", "manager", "guard"],
   /** open the national ID image of a person */

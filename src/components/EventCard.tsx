@@ -26,7 +26,7 @@ export default function EventCard({
         past ? styles.past : ""
       }`}
     >
-      {featured && <span className={styles.sticker}>Next up ★</span>}
+      {featured && <span className={styles.sticker}>Next up</span>}
 
       {event.image && (
         <div className={styles.media}>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import EventBanner from "@/components/EventBanner";
 import Footer from "@/components/Footer";
+import JoinPausedNotice from "@/components/JoinPausedNotice";
 
 const bagel = Bagel_Fat_One({
   weight: "400",
@@ -47,6 +48,7 @@ export default function RootLayout({
         <EventBanner />
         {children}
         <Footer />
+        <JoinPausedNotice />
       </body>
     </html>
   );

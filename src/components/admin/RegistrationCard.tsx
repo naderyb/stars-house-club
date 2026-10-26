@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { instagramLabel, instagramUrl } from "@/lib/instagram";
 import type { AdminRegistration, Status } from "@/lib/admin/types";
-import { buildMessage, whatsappLink } from "@/lib/whatsappMessages";
 import ConfirmModal from "./ConfirmModal";
 import { BanDialog, BannedAlert, BannedBadge } from "./BanParts";
 import IdViewer from "./IdViewer";
@@ -55,9 +54,6 @@ export default function RegistrationCard({
       setProofState("error");
     }
   };
-
-  const link = (decision: "accepted" | "rejected") =>
-    whatsappLink(reg.phone, buildMessage(decision, reg.role, reg.full_name));
 
   const artType =
     reg.art_type === "Other"
@@ -198,38 +194,26 @@ export default function RegistrationCard({
         </div>
       )}
 
-      {/* decisions: one tap saves it AND opens WhatsApp with the message ready */}
+      {/* decisions only update the registration status */}
       {!canDecide ? null : reg.status === "pending" ? (
         <div className={styles.actions}>
-          <a
-            href={link("accepted")}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
             className={`${styles.btn} ${styles.accept}`}
             onClick={() => onReview(reg.id, "accepted")}
           >
-            Accept + WhatsApp
-          </a>
-          <a
-            href={link("rejected")}
-            target="_blank"
-            rel="noopener noreferrer"
+            Accept
+          </button>
+          <button
+            type="button"
             className={`${styles.btn} ${styles.reject}`}
             onClick={() => onReview(reg.id, "rejected")}
           >
-            Reject + WhatsApp
-          </a>
+            Reject
+          </button>
         </div>
       ) : (
         <div className={styles.actions}>
-          <a
-            href={link(reg.status === "accepted" ? "accepted" : "rejected")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.btn}
-          >
-            Send again on WhatsApp
-          </a>
           <button
             type="button"
             className={styles.btn}

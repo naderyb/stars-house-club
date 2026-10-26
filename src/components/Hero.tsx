@@ -18,7 +18,7 @@ export default function Hero() {
 
       <div className={`container ${styles.content}`}>
         <div className={`paper ${styles.card}`}>
-          <span className={styles.sticker}>Come as you are ★</span>
+          <span className={styles.sticker}>Come as you are</span>
 
           <h1 className={styles.title}>
             <span className={styles.welcome}>Welcome to the</span>

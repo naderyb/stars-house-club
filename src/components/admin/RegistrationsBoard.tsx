@@ -43,12 +43,9 @@ export default function RegistrationsBoard({
         keepalive: true,
       });
       if (!res.ok) throw new Error();
-      // small delay so the WhatsApp tab opens before the card moves to another tab
-      setTimeout(() => {
-        setItems((list) =>
-          list.map((r) => (r.id === id ? { ...r, status } : r)),
-        );
-      }, 300);
+      setItems((list) =>
+        list.map((r) => (r.id === id ? { ...r, status } : r)),
+      );
     } catch {
       setError(
         "Could not save the decision. Check your connection and try again.",

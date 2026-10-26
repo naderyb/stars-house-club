@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { artTypes, getRole, roleIds } from "@/data/join";
 
-export const MIN_WHY_CHARS = 80;
-export const MIN_WHY_WORDS = 15;
+export const MIN_WHY_WORDS = 5;
 export const MAX_WHY_CHARS = 1500;
 export const MAX_PROOFS = 3;
 export const MAX_IMAGE_MB = 8;
@@ -125,9 +124,9 @@ export const joinSchema = z
       add("instagram", "Enter your handle, like starshouseclub");
     }
 
-    // the "why": one word is not enough
+    // the "why": require a short explanation
     const why = d.why.trim();
-    if (why.length < MIN_WHY_CHARS || countWords(why) < MIN_WHY_WORDS) {
+    if (countWords(why) < MIN_WHY_WORDS) {
       add(
         "why",
         `Tell us a bit more, at least ${MIN_WHY_WORDS} words. One word isn't enough!`,

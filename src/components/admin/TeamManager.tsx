@@ -240,7 +240,7 @@ export default function TeamManager({ admins, meId, readOnly }: Props) {
               className={`btn btn--red ${styles.save}`}
               onClick={copyHandoff}
             >
-              {copied ? "Copied ✓" : "Copy details"}
+              {copied ? "Copied" : "Copy details"}
             </button>
             <button
               type="button"

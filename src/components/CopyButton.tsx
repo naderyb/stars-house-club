@@ -32,7 +32,7 @@ export default function CopyButton({
       onClick={copy}
       aria-live="polite"
     >
-      {copied ? "Copied ✓" : label}
+      {copied ? "Copied" : label}
     </button>
   );
 }

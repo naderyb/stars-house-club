@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { fieldErrors, joinSchema, normalizeInput } from "@/lib/join/schema";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import { getServiceClient } from "@/lib/supabase/server";
+import { siteConfig } from "@/data/site";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,12 @@ const fail = (
 ) => NextResponse.json({ ok: false, message, errors }, { status });
 
 export async function POST(req: Request) {
+  if (siteConfig.joinPaused) {
+    return fail(
+      "Joining is temporarily unavailable. Come by and we'll take care of it!",
+      503,
+    );
+  }
   try {
     if (!rateLimit(`join:${clientIp(req)}`, 5, 10 * 60 * 1000)) {
       return fail("Too many attempts. Please try again in a few minutes.", 429);
@@ -98,7 +105,7 @@ export async function POST(req: Request) {
 
     if (duplicate && duplicate.length > 0) {
       return fail(
-        "This WhatsApp number is already registered for this role. We'll message you there.",
+        "This WhatsApp number is already registered for this role.",
         409,
         { phone: "Already registered with this number" },
       );

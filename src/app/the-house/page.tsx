@@ -60,7 +60,7 @@ export default function TheHousePage() {
           <p className={styles.ctaTitle}>
             You&apos;ve got the map, now act like you live here.
           </p>
-          <p className={`script ${styles.ctaText}`}>welcome home ♥</p>
+          <p className={`script ${styles.ctaText}`}>welcome home</p>
         </div>
       </Reveal>
     </main>

@@ -19,7 +19,7 @@ export default function MenuSection({ section }: { section: MenuSectionType }) {
         <div key={g} className={styles.group}>
           {group.title && (
             <h3 className={styles.groupTitle}>
-              <span aria-hidden="true">★</span> {group.title}
+              {group.title}
             </h3>
           )}
           <ul className={styles.list}>

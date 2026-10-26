@@ -105,7 +105,7 @@ export default function Footer() {
             <Link href="/privacy">Privacy</Link>
           </p>
           <p className={styles.credit}>
-            Made with ♥ by{" "}
+            Made by{" "}
             <a
               href={siteConfig.developerInstagram}
               target="_blank"

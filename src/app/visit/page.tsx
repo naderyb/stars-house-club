@@ -100,9 +100,6 @@ export default function VisitPage() {
               className={i % 2 === 0 ? styles.left : styles.right}
             >
               <div className={`paper ${styles.rule}`}>
-                <span className={styles.star} aria-hidden="true">
-                  ★
-                </span>
                 <div>
                   <h3 className={styles.ruleTitle}>{rule.title}</h3>
                   <p>{rule.text}</p>

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import JoinHub from "@/components/JoinHub";
 import Reveal from "@/components/Reveal";
+import { siteConfig } from "@/data/site";
+import { PausedBox } from "@/components/JoinPausedNotice";
+import JoinGate from "@/components/JoinGate";
 import styles from "./join.module.css";
 
 export const metadata: Metadata = {
@@ -11,21 +14,26 @@ export const metadata: Metadata = {
 };
 
 const steps = [
+  { title: "Register", text: "Pick visitor or artist and tell us about you." },
   {
-    title: "Register",
-    text: "Tell us about you and add a picture of your national ID.",
+    title: "Wait for the story",
+    text: "We post a story when decisions are ready.",
   },
   {
-    title: "We review",
-    text: "We check every registration, and every artist's name.",
-  },
-  {
-    title: "Answer on WhatsApp",
-    text: "Accepted or not, we message you there.",
+    title: "Check your answer",
+    text: "See it online anytime. No waiting for a message.",
   },
 ];
 
 export default function JoinPage() {
+  if (siteConfig.joinPaused) {
+    return (
+      <main className={`container ${styles.page}`}>
+        <PageHeader title="Club Registration" script="we'll be right back" />
+        <PausedBox />
+      </main>
+    );
+  }
   return (
     <main className={`container ${styles.page}`}>
       <PageHeader
@@ -33,21 +41,26 @@ export default function JoinPage() {
         script="everyone is welcome, we just like to know who's coming"
       />
 
-      <Reveal>
-        <ol className={styles.steps}>
-          {steps.map((s, i) => (
-            <li key={s.title} className={`paper ${styles.step}`}>
-              <span className={styles.num}>{i + 1}</span>
-              <div>
-                <h2 className={styles.stepTitle}>{s.title}</h2>
-                <p>{s.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Reveal>
-
-      <JoinHub />
+      <JoinGate
+        register={
+          <>
+            <Reveal>
+              <ol className={styles.steps}>
+                {steps.map((s, i) => (
+                  <li key={s.title} className={`paper ${styles.step}`}>
+                    <span className={styles.num}>{i + 1}</span>
+                    <div>
+                      <h2 className={styles.stepTitle}>{s.title}</h2>
+                      <p>{s.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+            <JoinHub />
+          </>
+        }
+      />
     </main>
   );
 }

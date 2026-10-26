@@ -16,7 +16,7 @@ const sections = [
   },
   {
     title: "Why",
-    text: "To review your registration, answer you on WhatsApp, and check at the door that the people coming in are the people we accepted. We use it for nothing else, and we never sell or share it.",
+    text: "To review your registration and check at the door that the people coming in are the people we accepted. We use it for nothing else, and we never sell or share it.",
   },
   {
     title: "Who can see it",

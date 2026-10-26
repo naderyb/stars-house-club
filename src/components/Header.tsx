@@ -28,7 +28,7 @@ export default function Header() {
           aria-controls="main-nav"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "Close" : "Menu"}
+          {open ? "Close" : "Explore"}
         </button>
 
         <nav

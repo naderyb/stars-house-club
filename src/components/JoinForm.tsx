@@ -239,6 +239,9 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
       }
 
       buzz(20);
+      try {
+        localStorage.setItem("shc_phone", normalizePhone(values.phone) ?? "");
+      } catch {}
       setStatus("done");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -257,19 +260,22 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
     return (
       <div className={`paper ${styles.success}`} role="status">
         <StarLogo size={72} />
-        <h3 className={styles.successTitle}>Registration received!</h3>
+        <h3 className={styles.successTitle}>You&apos;re registered!</h3>
         <p>
-          Thank you {firstName}. We review every registration, and we&apos;ll
-          send you our answer on WhatsApp at{" "}
-          <strong>{normalizePhone(values.phone)}</strong>.
+          Thanks {firstName}. Your registration is waiting for review.
         </p>
-        <p className="script">see you at the house ♥</p>
+        <p className={styles.waHint}>
+          We&apos;ll post a story when decisions are ready. Check your status
+          here anytime.
+        </p>
+
+        <Link href="/status" className={styles.statusLink}>
+          Or check your answer here, anytime →
+        </Link>
+
         <div className={styles.row}>
           <Link href="/" className="btn">
             Back home
-          </Link>
-          <Link href="/events" className="btn btn--red">
-            See events
           </Link>
         </div>
       </div>
@@ -357,7 +363,7 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
       <Field
         id="phone"
         label="WhatsApp number"
-        hint="We'll send you our answer on WhatsApp, so use your WhatsApp number."
+        hint="Use the number you will use to check your status."
         error={errors.phone}
       >
         <input
@@ -562,7 +568,7 @@ export default function JoinForm({ role, onSwitch }: JoinFormProps) {
         </div>
         <p className={styles.count}>
           {words >= MIN_WHY_WORDS
-            ? `${words} words, perfect ★`
+            ? `${words} words, perfect`
             : `${words}/${MIN_WHY_WORDS} words minimum`}
         </p>
       </Field>
