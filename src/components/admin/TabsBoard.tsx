@@ -44,7 +44,7 @@ const timeFmt = new Intl.DateTimeFormat("en-GB", {
   hourCycle: "h23",
 });
 
-const PAGE_SIZE = 7;
+const PAGE_SIZE = 8;
 
 const norm = (s: string) =>
   s
