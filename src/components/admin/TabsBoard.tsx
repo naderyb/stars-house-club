@@ -44,6 +44,20 @@ const timeFmt = new Intl.DateTimeFormat("en-GB", {
   hourCycle: "h23",
 });
 
+const PAGE_SIZE = 7;
+
+const norm = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+type PayFilter = "all" | "unpaid" | "paid";
+type SortMode = "newest" | "oldest" | "az";
+
+const tabState = (t: Tab) =>
+  t.items.length === 0 ? "empty" : unpaidTotal(t.items) > 0 ? "owed" : "paid";
+
 interface Confirmation {
   title: string;
   message: string;
@@ -70,6 +84,10 @@ export default function TabsBoard({
   const [checked, setChecked] = useState<string[]>([]);
   const [newName, setNewName] = useState("");
   const [picking, setPicking] = useState(false);
+  const [page, setPage] = useState(0);
+  const [tabQuery, setTabQuery] = useState("");
+  const [payFilter, setPayFilter] = useState<PayFilter>("all");
+  const [sort, setSort] = useState<SortMode>("newest");
   const [formError, setFormError] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -131,6 +149,45 @@ export default function TabsBoard({
 
   /* ---------- derived ---------- */
   const tabIds = new Set(tabs.map((t) => t.id));
+  const q = norm(tabQuery.trim());
+  // two people can share a name: add the opening time wherever the name shows
+  const nameCount = new Map<string, number>();
+  for (const t of tabs) {
+    const key = norm(t.name.trim());
+    nameCount.set(key, (nameCount.get(key) ?? 0) + 1);
+  }
+  const label = (t: Tab) =>
+    (nameCount.get(norm(t.name.trim())) ?? 0) > 1
+      ? `${t.name} · ${timeFmt.format(new Date(t.created_at))}`
+      : t.name;
+
+  const unpaidCount = tabs.filter((t) => tabState(t) === "owed").length;
+  const paidCount = tabs.filter((t) => tabState(t) === "paid").length;
+
+  const filteredTabs = [...tabs]
+    .filter((t) => {
+      if (payFilter === "unpaid" && tabState(t) !== "owed") return false;
+      if (payFilter === "paid" && tabState(t) !== "paid") return false;
+      return !q || norm(t.name).includes(q);
+    })
+    .sort((a, b) =>
+      sort === "az"
+        ? a.name.localeCompare(b.name, "fr", { sensitivity: "base" }) ||
+          a.created_at.localeCompare(b.created_at)
+        : sort === "oldest"
+          ? a.created_at.localeCompare(b.created_at)
+          : b.created_at.localeCompare(a.created_at),
+    );
+  const typedName = newName.trim();
+  const nameTaken =
+    typedName.length > 0 &&
+    tabs.some((t) => norm(t.name.trim()) === norm(typedName));
+  const pageCount = Math.max(1, Math.ceil(filteredTabs.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount - 1);
+  const pageTabs = filteredTabs.slice(
+    currentPage * PAGE_SIZE,
+    (currentPage + 1) * PAGE_SIZE,
+  );
   const selected = tabs.find((t) => t.id === selectedId) ?? null;
   const checkedIds = checked.filter((id) => tabIds.has(id));
   const checkedTabs = tabs.filter((t) => checkedIds.includes(t.id));
@@ -152,6 +209,10 @@ export default function TabsBoard({
     const res = await send({ action: "openTab", name });
     if (res) {
       setNewName("");
+      setTabQuery("");
+      setPayFilter("all");
+      setSort("newest");
+      setPage(0);
       if (typeof res.id === "string") setSelectedId(res.id);
     }
   };
@@ -177,7 +238,7 @@ export default function TabsBoard({
 
   const deleteTab = (tab: Tab) => {
     setConfirmation({
-      title: `Delete ${tab.name}'s tab?`,
+      title: `Delete ${label(tab)}'s tab?`,
       message: "Everything on it is removed. This can't be undone.",
       confirmLabel: "Delete tab",
       action: () => {
@@ -191,7 +252,7 @@ export default function TabsBoard({
   const payTabs = (list: Tab[]) => {
     const total = list.reduce((sum, t) => sum + unpaidTotal(t.items), 0);
     if (total <= 0) return setError("Nothing to pay on that tab yet.");
-    const names = list.map((t) => t.name).join(", ");
+    const names = list.map(label).join(", ");
     setConfirmation({
       title:
         list.length === 1 ? "Mark tab as paid?" : "Pay these tabs together?",
@@ -211,7 +272,7 @@ export default function TabsBoard({
   const payItem = (tab: Tab, item: TabItem) => {
     setConfirmation({
       title: "Mark this item as paid?",
-      message: `${tab.name}: ${item.qty > 1 ? `${item.qty} × ` : ""}${item.name}, ${formatPrice(lineTotal(item))}. The tab stays open.`,
+      message: `${label(tab)}: ${item.qty > 1 ? `${item.qty} × ` : ""}${item.name}, ${formatPrice(lineTotal(item))}. The tab stays open.`,
       confirmLabel: "Mark as paid",
       action: () => {
         send({ action: "payItems", itemIds: [item.id] });
@@ -288,57 +349,141 @@ export default function TabsBoard({
               : "Nothing to pay right now."}
           </p>
         ) : (
-          <div className={tabStyles.tabGrid}>
-            {tabs.map((t) => {
-              const tabOwed = unpaidTotal(t.items);
-              const state =
-                t.items.length === 0 ? "empty" : tabOwed > 0 ? "owed" : "paid";
-              return (
-                <div
-                  key={t.id}
-                  className={tabStyles.tab}
-                  data-state={state}
-                  data-selected={selectedId === t.id}
+          <>
+            <div
+              className={tabStyles.filters}
+              role="group"
+              aria-label="Filter tabs"
+            >
+              {(
+                [
+                  ["all", "All", tabs.length],
+                  ["unpaid", "Unpaid", unpaidCount],
+                  ["paid", "Paid", paidCount],
+                ] as const
+              ).map(([key, label, count]) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={tabStyles.filter}
+                  aria-pressed={payFilter === key}
+                  onClick={() => {
+                    setPayFilter(key);
+                    setPage(0);
+                  }}
                 >
-                  {canPay && (
-                    <label className={tabStyles.check}>
-                      <input
-                        type="checkbox"
-                        checked={checkedIds.includes(t.id)}
-                        onChange={() =>
-                          setChecked((prev) => toggle(prev, t.id))
-                        }
-                        aria-label={`Select ${t.name} to pay`}
-                      />
-                    </label>
-                  )}
-                  <button
-                    type="button"
-                    className={tabStyles.tabMain}
-                    aria-pressed={selectedId === t.id}
-                    onClick={() => {
-                      setSelectedId(selectedId === t.id ? null : t.id);
-                      setRenaming(false);
-                      setFormError("");
-                      setPicking(false);
-                    }}
+                  {label} <span>{count}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className={tabStyles.searchRow}>
+              <input
+                type="search"
+                className={tabStyles.tabSearch}
+                placeholder="Find a tab by name..."
+                value={tabQuery}
+                onChange={(e) => {
+                  setTabQuery(e.target.value);
+                  setPage(0);
+                }}
+                aria-label="Find a tab by name"
+                autoComplete="off"
+              />
+              <select
+                className={tabStyles.sort}
+                value={sort}
+                onChange={(e) => {
+                  setSort(e.target.value as SortMode);
+                  setPage(0);
+                }}
+                aria-label="Sort tabs"
+              >
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="az">A → Z</option>
+              </select>
+            </div>
+
+            {filteredTabs.length === 0 && (
+              <p className={tabStyles.sub}>Nothing to show with this filter.</p>
+            )}
+
+            <div className={tabStyles.tabGrid}>
+              {pageTabs.map((t) => {
+                const tabOwed = unpaidTotal(t.items);
+                const state = tabState(t);
+                return (
+                  <div
+                    key={t.id}
+                    className={tabStyles.tab}
+                    data-state={state}
+                    data-selected={selectedId === t.id}
                   >
-                    <strong>{t.name}</strong>
-                    <span>
-                      {state === "owed"
-                        ? formatPrice(tabOwed)
-                        : state === "paid"
-                          ? "All paid"
-                          : "Empty"}
-                    </span>
-                    <small>
-                      since {timeFmt.format(new Date(t.created_at))}
-                    </small>
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+                    {canPay && (
+                      <label className={tabStyles.check}>
+                        <input
+                          type="checkbox"
+                          checked={checkedIds.includes(t.id)}
+                          onChange={() =>
+                            setChecked((prev) => toggle(prev, t.id))
+                          }
+                          aria-label={`Select ${label(t)} to pay`}
+                        />
+                      </label>
+                    )}
+                    <button
+                      type="button"
+                      className={tabStyles.tabMain}
+                      aria-pressed={selectedId === t.id}
+                      onClick={() => {
+                        setSelectedId(selectedId === t.id ? null : t.id);
+                        setRenaming(false);
+                        setFormError("");
+                        setPicking(false);
+                      }}
+                    >
+                      <strong>{label(t)}</strong>
+                      <span>
+                        {state === "owed"
+                          ? formatPrice(tabOwed)
+                          : state === "paid"
+                            ? "All paid"
+                            : "Empty"}
+                      </span>
+                      <small>
+                        since {timeFmt.format(new Date(t.created_at))}
+                      </small>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {pageCount > 1 && (
+              <nav className={tabStyles.pager} aria-label="Tab pages">
+                <button
+                  type="button"
+                  className={extra.smallBtn}
+                  onClick={() => setPage(currentPage - 1)}
+                  disabled={currentPage === 0}
+                >
+                  ← Newer
+                </button>
+                <span>
+                  Page {currentPage + 1} of {pageCount}
+                </span>
+                <button
+                  type="button"
+                  className={extra.smallBtn}
+                  onClick={() => setPage(currentPage + 1)}
+                  disabled={currentPage >= pageCount - 1}
+                >
+                  Older →
+                </button>
+              </nav>
+            )}
+          </>
         )}
 
         {canTake && (
@@ -356,6 +501,13 @@ export default function TabsBoard({
                 maxLength={40}
                 autoComplete="off"
               />
+              {nameTaken && (
+                <p className={formStyles.hint}>
+                  A tab named &quot;{typedName}&quot; is already open. You can
+                  still open this one, and both will show their opening time.
+                  Or add a detail, like &quot;{typedName} K.&quot;
+                </p>
+              )}
             </div>
             <button type="submit" className={`btn btn--red ${styles.save}`}>
               Open tab
@@ -401,10 +553,10 @@ export default function TabsBoard({
       {selected && (
         <section
           className={`paper ${styles.card}`}
-          aria-label={`${selected.name}'s tab`}
+          aria-label={`${label(selected)}'s tab`}
         >
           <div className={extra.panelHead}>
-            <h2 className={styles.catTitle}>{selected.name}</h2>
+            <h2 className={styles.catTitle}>{label(selected)}</h2>
             {canTake && (
               <div className={tabStyles.headTools}>
                 <button
@@ -474,6 +626,8 @@ export default function TabsBoard({
                     <small>
                       {formatPrice(i.price)}
                       {i.qty > 1 ? ` each × ${i.qty}` : ""}
+                      {" · "}
+                      {timeFmt.format(new Date(i.created_at))}
                     </small>
                   </span>
                   <span className={extra.lineTotal}>
@@ -578,7 +732,7 @@ export default function TabsBoard({
       {picking && selected && canTake && (
         <OrderPicker
           menu={menu}
-          tabName={selected.name}
+          tabName={label(selected)}
           onAdd={(name, price, qty) => addItem(selected, name, price, qty)}
           onClose={() => setPicking(false)}
         />

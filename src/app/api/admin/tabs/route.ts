@@ -86,13 +86,13 @@ export async function POST(req: Request) {
 
     switch (body.action) {
       case "openTab": {
-        // double tap protection: same name opened by this person in the last 10 seconds
+        // double tap protection: same name opened by this person in the last 3 seconds
         const { data: recent, error: recentError } = await supabase
           .from("tabs")
           .select("id, name")
           .eq("status", "open")
           .eq("created_by", session.username)
-          .gte("created_at", new Date(Date.now() - 10_000).toISOString());
+          .gte("created_at", new Date(Date.now() - 3_000).toISOString());
         if (recentError) throw recentError;
         const same = (recent ?? []).find(
           (t) => (t.name as string).toLowerCase() === body.name.toLowerCase(),

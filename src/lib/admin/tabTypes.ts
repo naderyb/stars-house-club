@@ -3,8 +3,8 @@ export interface TabItem {
   name: string;
   price: number;
   qty: number;
-
   paid_at: string | null;
+  created_at: string;
 }
 
 export interface Tab {

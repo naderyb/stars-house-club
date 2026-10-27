@@ -1,11 +1,17 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { getServiceClient } from "@/lib/supabase/server";
 import type { MenuChoice } from "./orderTypes";
 import { todayStartIso } from "./stats";
 import type { ClosedTab, Tab, TabItem } from "./tabTypes";
 
-/** Calls the SQL cleanup: yesterday's tabs lose their names (sales stay). */
+let lastWipe = 0;
+
+/** Calls the SQL cleanup: yesterday's tabs lose their names (sales stay).
+ *  Runs at most once every 10 minutes, not on every screen refresh. */
 export async function wipeOldTabs() {
+  if (Date.now() - lastWipe < 10 * 60 * 1000) return;
+  lastWipe = Date.now();
   const supabase = getServiceClient();
   const { error } = await supabase.rpc("wipe_old_tabs");
   if (error) console.error("wipe_old_tabs failed:", error.message);
@@ -30,21 +36,22 @@ export async function getOpenTabs(): Promise<Tab[]> {
     name: t.name as string,
     created_at: t.created_at as string,
     created_by: t.created_by as string | null,
-    items: [...((t.tab_items ?? []) as (TabItem & { created_at: string })[])]
+    items: [...((t.tab_items ?? []) as TabItem[])]
       .sort((a, b) => a.created_at.localeCompare(b.created_at))
-      .map(({ id, name, price, qty, paid_at }) => ({
+      .map(({ id, name, price, qty, paid_at, created_at }) => ({
         id,
         name,
         price,
         qty,
         paid_at,
+        created_at,
       })),
   }));
 }
 
 /** The menu as quick-pick choices, in the menu's own order, grouped by section.
  *  Available items only, one entry per name. */
-export async function getMenuChoices(): Promise<MenuChoice[]> {
+async function loadMenuChoices(): Promise<MenuChoice[]> {
   const supabase = getServiceClient();
   const [cats, items] = await Promise.all([
     supabase
@@ -79,6 +86,13 @@ export async function getMenuChoices(): Promise<MenuChoice[]> {
   }
   return menu;
 }
+
+/** The menu rarely changes, so every screen shares one copy for 30 seconds. */
+export const getMenuChoices = unstable_cache(
+  loadMenuChoices,
+  ["admin-menu-choices"],
+  { revalidate: 30 },
+);
 
 /** Tabs settled today, newest first (so an admin can undo a mistake). */
 export async function getRecentlyClosedTabs(): Promise<ClosedTab[]> {
