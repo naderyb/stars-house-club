@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function StatusPage() {
   return (
     <main className="container">
-      <PageHeader title="Did I get in?" script="type your number, that's it" />
+      <PageHeader title="Did I get in?" script="use your registration details" />
       <div className={styles.narrow}>
         <StatusChecker />
       </div>

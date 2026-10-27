@@ -200,3 +200,10 @@
   font-size: 0.85rem;
   opacity: 0.75;
 }
+
+.addItems {
+  width: 100%;
+  min-height: 62px;
+  font-size: 1.15rem;
+  text-align: center;
+}

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { normalizePhone } from "@/lib/join/schema";
+import { countWords, normalizePhone } from "@/lib/join/schema";
 import { clientIp, rateLimit } from "@/lib/rateLimit";
 import { getServiceClient } from "@/lib/supabase/server";
 
@@ -20,29 +20,57 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json().catch(() => null);
-    const phone = normalizePhone(String(body?.phone ?? ""));
-    if (!phone) {
+    const identifier = String(body?.identifier ?? body?.phone ?? "")
+      .trim()
+      .replace(/\s+/g, " ");
+    if (!identifier || identifier.length > 120) {
       return reply(
         {
           ok: false,
-          message: "That doesn't look like a mobile number. Try 0555 12 34 56.",
+          message:
+            "Enter the email, full name, or phone number you registered with.",
         },
         422,
       );
     }
-    if (!rateLimit(`status-phone:${phone}`, 6, WINDOW)) {
+
+    const phone = normalizePhone(identifier);
+    const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(identifier)
+      ? identifier.toLowerCase()
+      : null;
+    const fullName = !phone && !email ? identifier : null;
+    if (fullName && countWords(fullName) < 2) {
+      return reply(
+        {
+          ok: false,
+          message: "Enter your full name, email, or a valid mobile number.",
+        },
+        422,
+      );
+    }
+
+    const rateKey = phone ?? email ?? fullName?.toLowerCase() ?? identifier;
+    if (!rateLimit(`status-identifier:${rateKey}`, 6, WINDOW)) {
       return reply(
         { ok: false, message: "Too many tries. Please wait a few minutes." },
         429,
       );
     }
 
-    const { data, error } = await getServiceClient()
+    const query = getServiceClient()
       .from("registrations")
       .select("role, status, banned, created_at")
-      .eq("phone", phone)
       .in("role", ["artist", "visitor"])
       .order("created_at", { ascending: false });
+    const escapedName = fullName
+      ?.replace(/\\/g, "\\\\")
+      .replace(/%/g, "\\%")
+      .replace(/_/g, "\\_");
+    const { data, error } = phone
+      ? await query.eq("phone", phone)
+      : email
+        ? await query.eq("email", email)
+        : await query.ilike("full_name", escapedName!);
     if (error) throw error;
 
     // newest registration per role. A banned person just sees "not this time".

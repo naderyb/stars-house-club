@@ -42,24 +42,40 @@ export async function getOpenTabs(): Promise<Tab[]> {
   }));
 }
 
-/** The menu as quick-pick choices: one entry per name, available items only. */
+/** The menu as quick-pick choices, in the menu's own order, grouped by section.
+ *  Available items only, one entry per name. */
 export async function getMenuChoices(): Promise<MenuChoice[]> {
   const supabase = getServiceClient();
-  const { data, error } = await supabase
-    .from("menu_items")
-    .select("name, price")
-    .eq("available", true)
-    .order("sort")
-    .order("created_at");
-  if (error) throw error;
+  const [cats, items] = await Promise.all([
+    supabase
+      .from("menu_categories")
+      .select("id, title")
+      .order("sort")
+      .order("created_at"),
+    supabase
+      .from("menu_items")
+      .select("category_id, name, price")
+      .eq("available", true)
+      .order("sort")
+      .order("created_at"),
+  ]);
+  if (cats.error) throw cats.error;
+  if (items.error) throw items.error;
 
   const seen = new Set<string>();
   const menu: MenuChoice[] = [];
-  for (const m of (data ?? []) as MenuChoice[]) {
-    const key = m.name.trim().toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    menu.push({ name: m.name, price: m.price });
+  for (const cat of cats.data ?? []) {
+    for (const m of items.data ?? []) {
+      if (m.category_id !== cat.id) continue;
+      const key = (m.name as string).trim().toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      menu.push({
+        name: m.name as string,
+        price: m.price as number,
+        section: cat.title as string,
+      });
+    }
   }
   return menu;
 }

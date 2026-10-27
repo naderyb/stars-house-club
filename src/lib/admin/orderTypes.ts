@@ -26,10 +26,12 @@ export interface PaidOrder {
   paid_at: string;
 }
 
-/** What can be typed into the order box: name + price from the menu */
+/** One orderable menu item, with the section it belongs to */
 export interface MenuChoice {
   name: string;
   price: number;
+  /** the menu section's title, e.g. "Hot drinks" */
+  section?: string;
 }
 
 export const orderTotal = (items: AdminOrderItem[]) =>

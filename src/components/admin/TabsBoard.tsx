@@ -20,6 +20,7 @@ import {
   type TabItem,
 } from "@/lib/admin/tabTypes";
 import ConfirmModal from "./ConfirmModal";
+import OrderPicker from "./OrderPicker";
 import formStyles from "@/components/JoinForm.module.css";
 import extra from "./AdminExtras.module.css";
 import styles from "./MenuManager.module.css";
@@ -42,19 +43,6 @@ const timeFmt = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
   hourCycle: "h23",
 });
-
-/** "izem", "2 izem", "2x izem", "izem x2" -> { name, qty } */
-function parseEntry(raw: string, menu: MenuChoice[]) {
-  const s = raw.trim().replace(/\s+/g, " ");
-  const exact = menu.find((m) => m.name.toLowerCase() === s.toLowerCase());
-  if (exact) return { name: s, qty: 1 };
-
-  const before = s.match(/^(\d{1,2})\s*[x×*]?\s+(.+)$/i);
-  if (before) return { name: before[2], qty: Number(before[1]) };
-  const after = s.match(/^(.+?)\s*[x×*]\s*(\d{1,2})$/i);
-  if (after) return { name: after[1], qty: Number(after[2]) };
-  return { name: s, qty: 1 };
-}
 
 interface Confirmation {
   title: string;
@@ -81,8 +69,7 @@ export default function TabsBoard({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
   const [newName, setNewName] = useState("");
-  const [entry, setEntry] = useState("");
-  const [customPrice, setCustomPrice] = useState("");
+  const [picking, setPicking] = useState(false);
   const [formError, setFormError] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -90,8 +77,6 @@ export default function TabsBoard({
 
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
-
-  const entryRef = useRef<HTMLInputElement>(null);
 
   /* ---------- saving: one request at a time, in the order they were tapped ---------- */
   const queue = useRef<Promise<unknown>>(Promise.resolve());
@@ -158,12 +143,6 @@ export default function TabsBoard({
   const alreadyPaid = selected ? paidTotal(selected.items) : 0;
   const hasPaidLines = !!selected?.items.some((i) => i.paid_at);
 
-  const parsed = parseEntry(entry, menu);
-  const match = menu.find(
-    (m) => m.name.toLowerCase() === parsed.name.toLowerCase(),
-  );
-  const needsPrice = parsed.name.length > 0 && !match;
-
   /* ---------- actions ---------- */
   const openTab = async (e: FormEvent) => {
     e.preventDefault();
@@ -180,28 +159,6 @@ export default function TabsBoard({
   const addItem = (tab: Tab, name: string, price: number, qty: number) => {
     setFormError("");
     send({ action: "addItem", tabId: tab.id, name, price, qty });
-  };
-
-  const addTyped = (e: FormEvent) => {
-    e.preventDefault();
-    if (!selected) return;
-    if (!parsed.name) return setFormError("Type what was ordered.");
-    if (parsed.qty < 1) return setFormError("The quantity must be 1 or more.");
-
-    let price = match?.price;
-    if (price === undefined) {
-      if (!/^\d{1,7}$/.test(customPrice.trim())) {
-        return setFormError(
-          `"${parsed.name}" is not on the menu. Enter its price in DA.`,
-        );
-      }
-      price = Number(customPrice);
-    }
-
-    addItem(selected, match?.name ?? parsed.name, price, parsed.qty);
-    setEntry("");
-    setCustomPrice("");
-    entryRef.current?.focus();
   };
 
   const changeQty = (item: TabItem, qty: number) => {
@@ -363,8 +320,7 @@ export default function TabsBoard({
                       setSelectedId(selectedId === t.id ? null : t.id);
                       setRenaming(false);
                       setFormError("");
-                      setEntry("");
-                      setCustomPrice("");
+                      setPicking(false);
                     }}
                   >
                     <strong>{t.name}</strong>
@@ -566,112 +522,15 @@ export default function TabsBoard({
             </ul>
           )}
 
-          {/* waiter / admin: tap a menu item to put it on this tab */}
+          {/* waiter / admin: one big button opens the search-and-select picker */}
           {canTake && (
-            <>
-              <div className={extra.menuPicker}>
-                <div className={extra.menuPickerHead}>
-                  <h3 className={extra.menuPickerTitle}>Menu</h3>
-                  <span className={extra.muted}>Tap an item to add it</span>
-                </div>
-                {menu.length === 0 ? (
-                  <p className={extra.muted}>
-                    No available menu items. Add items from the Menu page.
-                  </p>
-                ) : (
-                  <div className={extra.menuChoices}>
-                    {menu.map((choice) => {
-                      const inTab = selected.items
-                        .filter(
-                          (i) =>
-                            !i.paid_at &&
-                            i.name === choice.name &&
-                            i.price === choice.price,
-                        )
-                        .reduce((sum, i) => sum + i.qty, 0);
-                      return (
-                        <button
-                          key={`${choice.name}-${choice.price}`}
-                          type="button"
-                          className={extra.menuChoice}
-                          data-picked={inTab > 0}
-                          onClick={() =>
-                            addItem(selected, choice.name, choice.price, 1)
-                          }
-                        >
-                          <span>{choice.name}</span>
-                          <strong>{formatPrice(choice.price)}</strong>
-                          {inTab > 0 && (
-                            <em className={extra.menuChoiceQty}>×{inTab}</em>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <form className={extra.entry} onSubmit={addTyped} noValidate>
-                <div className={formStyles.field}>
-                  <label htmlFor="tab-entry" className={formStyles.label}>
-                    Or type it
-                  </label>
-                  <input
-                    id="tab-entry"
-                    ref={entryRef}
-                    className={formStyles.input}
-                    list="tab-menu-choices"
-                    value={entry}
-                    onChange={(e) => setEntry(e.target.value)}
-                    placeholder="e.g. izem, 2 tiramisu, latte x3"
-                    autoComplete="off"
-                    maxLength={80}
-                  />
-                  <datalist id="tab-menu-choices">
-                    {menu.map((m) => (
-                      <option key={m.name} value={m.name}>
-                        {formatPrice(m.price)}
-                      </option>
-                    ))}
-                  </datalist>
-                  {match && (
-                    <p className={formStyles.hint}>
-                      {parsed.qty} × {match.name} ={" "}
-                      {formatPrice(match.price * parsed.qty)}
-                    </p>
-                  )}
-                </div>
-
-                {needsPrice && (
-                  <div className={`${formStyles.field} ${extra.entryPrice}`}>
-                    <label htmlFor="tab-price" className={formStyles.label}>
-                      Price (DA) each
-                    </label>
-                    <input
-                      id="tab-price"
-                      className={formStyles.input}
-                      value={customPrice}
-                      onChange={(e) => setCustomPrice(e.target.value)}
-                      inputMode="numeric"
-                      placeholder="not on the menu"
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  className={`btn ${styles.save}`}
-                  disabled={!entry.trim()}
-                >
-                  Add
-                </button>
-              </form>
-              {formError && (
-                <p className={formStyles.error} role="alert">
-                  {formError}
-                </p>
-              )}
-            </>
+            <button
+              type="button"
+              className={`btn btn--red ${tabStyles.addItems}`}
+              onClick={() => setPicking(true)}
+            >
+              + Add items
+            </button>
           )}
 
           {/* totals + pay / close */}
@@ -714,6 +573,15 @@ export default function TabsBoard({
             </div>
           )}
         </section>
+      )}
+
+      {picking && selected && canTake && (
+        <OrderPicker
+          menu={menu}
+          tabName={selected.name}
+          onAdd={(name, price, qty) => addItem(selected, name, price, qty)}
+          onClose={() => setPicking(false)}
+        />
       )}
 
       {/* ---- admin only: today's settled tabs, to undo a mistake ---- */}
