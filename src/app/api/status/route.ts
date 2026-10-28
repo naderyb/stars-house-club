@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     const query = getServiceClient()
       .from("registrations")
-      .select("role, status, banned, created_at")
+      .select("role, status, banned, reject_reason, created_at")
       .in("role", ["artist", "visitor"])
       .order("created_at", { ascending: false });
     const escapedName = fullName
@@ -75,7 +75,11 @@ export async function POST(req: Request) {
 
     // newest registration per role. A banned person just sees "not this time".
     const seen = new Set<string>();
-    const results: { role: string; status: string }[] = [];
+    const results: {
+      role: string;
+      status: string;
+      reason: string | null;
+    }[] = [];
     for (const r of data ?? []) {
       if (seen.has(r.role)) continue;
       seen.add(r.role);
@@ -84,7 +88,14 @@ export async function POST(req: Request) {
         : r.status === "accepted" || r.status === "rejected"
           ? r.status
           : "pending";
-      results.push({ role: r.role, status });
+      results.push({
+        role: r.role,
+        status,
+        reason:
+          status === "rejected" && !r.banned
+            ? ((r.reject_reason as string | null) || null)
+            : null,
+      });
     }
 
     return reply({ ok: true, results });

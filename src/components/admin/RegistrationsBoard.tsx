@@ -33,18 +33,27 @@ export default function RegistrationsBoard({
   const [error, setError] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const review = async (id: string, status: Status) => {
+  const review = async (id: string, status: Status, reason?: string) => {
     setError("");
     try {
       const res = await fetch("/api/admin/review", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
+        body: JSON.stringify({ id, status, reason }),
         keepalive: true,
       });
       if (!res.ok) throw new Error();
       setItems((list) =>
-        list.map((r) => (r.id === id ? { ...r, status } : r)),
+        list.map((r) =>
+          r.id === id
+            ? {
+                ...r,
+                status,
+                reject_reason:
+                  status === "rejected" ? reason?.trim() || null : null,
+              }
+            : r,
+        ),
       );
     } catch {
       setError(

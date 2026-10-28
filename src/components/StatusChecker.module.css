@@ -85,6 +85,28 @@
     font-size: 1.15rem;
     font-weight: 700;
   }
+
+  .why {
+    display: grid;
+    gap: 0.2rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    text-align: left;
+    background: #fff;
+    border: 2px dashed var(--ink);
+    border-radius: var(--wobble-soft);
+  }
+
+  .why span {
+    font: 800 0.75rem var(--font-body);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+
+  .why p {
+    font-weight: 700;
+  }
   
   .wa {
     display: inline-flex;

@@ -20,6 +20,11 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => null);
     const id = String(body?.id ?? "");
     const status = String(body?.status ?? "");
+    // optional: only meaningful for a rejection
+    const reason =
+      status === "rejected" && typeof body?.reason === "string"
+        ? body.reason.trim().replace(/\s+/g, " ").slice(0, 300)
+        : "";
 
     if (!UUID.test(id) || !STATUSES.includes(status)) {
       return NextResponse.json(
@@ -34,6 +39,8 @@ export async function POST(req: Request) {
       .update({
         status,
         reviewed_at: status === "pending" ? null : new Date().toISOString(),
+        // the reason lives with a rejection: accepting or undoing clears it
+        reject_reason: reason || null,
       })
       .eq("id", id)
       .in("role", ["artist", "visitor"])

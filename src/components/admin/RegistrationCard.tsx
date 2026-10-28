@@ -6,6 +6,7 @@ import type { AdminRegistration, Status } from "@/lib/admin/types";
 import ConfirmModal from "./ConfirmModal";
 import { BanDialog, BannedAlert, BannedBadge } from "./BanParts";
 import IdViewer from "./IdViewer";
+import RejectDialog from "./RejectDialog";
 import { RoleBadge, StatusBadge } from "./StatusBadge";
 import styles from "./RegistrationCard.module.css";
 
@@ -16,7 +17,7 @@ interface ProofFile {
 
 interface Props {
   reg: AdminRegistration;
-  onReview: (id: string, status: Status) => void;
+  onReview: (id: string, status: Status, reason?: string) => void;
   canDecide: boolean;
   canViewId: boolean;
   canErase: boolean;
@@ -37,6 +38,7 @@ export default function RegistrationCard({
 }: Props) {
   const [confirmErase, setConfirmErase] = useState(false);
   const [banDialog, setBanDialog] = useState(false);
+  const [rejectDialog, setRejectDialog] = useState(false);
   const [proofs, setProofs] = useState<ProofFile[] | null>(null);
   const [proofState, setProofState] = useState<"idle" | "loading" | "error">(
     "idle",
@@ -207,13 +209,20 @@ export default function RegistrationCard({
           <button
             type="button"
             className={`${styles.btn} ${styles.reject}`}
-            onClick={() => onReview(reg.id, "rejected")}
+            onClick={() => setRejectDialog(true)}
           >
             Reject
           </button>
         </div>
       ) : (
         <div className={styles.actions}>
+          {reg.status === "rejected" && (
+            <p className={styles.reason}>
+              {reg.reject_reason
+                ? `They see: "${reg.reject_reason}"`
+                : "No reason given. They only see that it wasn't their time."}
+            </p>
+          )}
           <button
             type="button"
             className={styles.btn}
@@ -222,6 +231,17 @@ export default function RegistrationCard({
             Undo (back to pending)
           </button>
         </div>
+      )}
+
+      {rejectDialog && (
+        <RejectDialog
+          name={reg.full_name}
+          onCancel={() => setRejectDialog(false)}
+          onConfirm={(reason) => {
+            setRejectDialog(false);
+            onReview(reg.id, "rejected", reason);
+          }}
+        />
       )}
 
       {canErase && reg.has_id && (

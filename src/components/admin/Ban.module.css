@@ -149,3 +149,22 @@
     color: var(--cream);
     background: var(--red);
   }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip {
+    min-height: 40px;
+    padding: 0.3rem 0.8rem;
+    text-align: left;
+    font: 700 0.85rem var(--font-body);
+    color: var(--ink);
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }

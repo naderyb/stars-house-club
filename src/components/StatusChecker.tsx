@@ -9,6 +9,7 @@ type Status = "pending" | "accepted" | "rejected";
 interface Result {
   role: "artist" | "visitor";
   status: Status;
+  reason?: string | null;
 }
 
 const KEY = "shc_status_identifier";
@@ -164,10 +165,18 @@ export default function StatusChecker() {
 
                 {r.status === "rejected" && (
                   <>
+                    <p className={styles.icon} aria-hidden="true">
+                      💫
+                    </p>
                     <h2 className={styles.title}>Not this time</h2>
+                    {r.reason && (
+                      <div className={styles.why}>
+                        <span>Why</span>
+                        <p>{r.reason}</p>
+                      </div>
+                    )}
                     <p className={styles.big}>
-                      We&apos;re full for now. Keep shining, you can apply again
-                      later.
+                      Keep shining. You can apply again later.
                     </p>
                     {!siteConfig.joinPaused && (
                       <Link href="/join" className="btn">

@@ -10,7 +10,7 @@ export default async function AdminHome() {
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, created_at, role, full_name, stage_name, phone, email, instagram, why, art_type, art_type_other, portfolio_url, proof_paths, status, id_path, banned, ban_reason",
+      "id, created_at, role, full_name, stage_name, phone, email, instagram, why, art_type, art_type_other, portfolio_url, proof_paths, status, id_path, banned, ban_reason, reject_reason",
     )
     .in("role", ["artist", "visitor"])
     .order("created_at", { ascending: false });
