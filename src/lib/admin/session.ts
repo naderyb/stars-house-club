@@ -8,7 +8,7 @@ import { STARTER_ID } from "./auth";
 import { roleHome, type Role } from "./roles";
 
 export const SESSION_COOKIE = "shc_admin";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 10; // 10 years; logout is explicit
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 ; // 1 year
 
 interface TokenPayload {
   /** admin id, or "starter" while no account exists yet */
@@ -79,11 +79,10 @@ function readSessionToken(token?: string): TokenPayload | null {
 export const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "strict" as const,
+  sameSite: "lax" as const,
   path: "/",
   maxAge: COOKIE_MAX_AGE,
 };
-
 /** Reads the cookie AND checks the account still exists and the password
  *  hasn't changed since. Removed or reset accounts are out on their next click. */
 async function loadSession(): Promise<AdminSession | null> {
