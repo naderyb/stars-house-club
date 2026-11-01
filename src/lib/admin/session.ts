@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -85,7 +86,7 @@ export const cookieOptions = {
 
 /** Reads the cookie AND checks the account still exists and the password
  *  hasn't changed since. Removed or reset accounts are out on their next click. */
-export async function getSession(): Promise<AdminSession | null> {
+async function loadSession(): Promise<AdminSession | null> {
   const store = await cookies();
   const token = readSessionToken(store.get(SESSION_COOKIE)?.value);
   if (!token) return null;
@@ -123,6 +124,7 @@ export async function getSession(): Promise<AdminSession | null> {
     return null;
   }
 }
+export const getSession = cache(loadSession);
 
 /** For pages: sends the visitor to the right place instead of returning */
 export async function requireAdminPage(options: GuardOptions = {}) {

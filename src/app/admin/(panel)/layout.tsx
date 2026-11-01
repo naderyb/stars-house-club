@@ -7,7 +7,6 @@ export default async function PanelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireAdminPage(); // not signed in -> login, starter login -> change credentials
 
   const session = await requireAdminPage(); // not signed in -> login, starter login -> change credentials
 

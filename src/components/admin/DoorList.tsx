@@ -8,7 +8,6 @@ import PersonSheet from "./PersonSheet";
 import { RoleBadge, StatusBadge } from "./StatusBadge";
 import styles from "./DoorList.module.css";
 
-/** lowercase and strip accents, so "Amélie" matches "amelie" */
 type Filter = "all" | Role | "banned";
 
 const LABELS: Record<Filter, string> = {
@@ -17,6 +16,9 @@ const LABELS: Record<Filter, string> = {
   visitor: "Visitors",
   banned: "Banned",
 };
+
+/** how many rows are drawn at once: keeps the page light on cheap phones */
+const PAGE = 40;
 
 export default function DoorList({
   people: initial,
@@ -28,20 +30,39 @@ export default function DoorList({
   const [people, setPeople] = useState(initial);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [limit, setLimit] = useState(PAGE);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const selected = people.find((p) => p.id === selectedId) ?? null;
 
-  const matches = (p: DoorPerson, f: Filter) =>
-    f === "all" ? true : f === "banned" ? p.banned : p.role === f;
+  // one pass over everyone for the four chip counts
+  const counts = useMemo(() => {
+    const c: Record<Filter, number> = {
+      all: people.length,
+      artist: 0,
+      visitor: 0,
+      banned: 0,
+    };
+    for (const p of people) {
+      c[p.role] += 1;
+      if (p.banned) c.banned += 1;
+    }
+    return c;
+  }, [people]);
 
-  const results = useMemo(() => {
-    return people.filter((p) => {
-      return matches(p, filter);
-    });
-  }, [people, filter]);
+  const results = useMemo(
+    () =>
+      people.filter((p) =>
+        filter === "all"
+          ? true
+          : filter === "banned"
+            ? p.banned
+            : p.role === filter,
+      ),
+    [people, filter],
+  );
 
-  const count = (f: Filter) => people.filter((p) => matches(p, f)).length;
+  const shown = results.slice(0, limit);
 
   const ban = async (id: string, banned: boolean, reason: string) => {
     setError("");
@@ -55,7 +76,11 @@ export default function DoorList({
       setPeople((list) =>
         list.map((p) =>
           p.id === id
-            ? { ...p, banned, ban_reason: banned ? reason.trim() || null : null }
+            ? {
+                ...p,
+                banned,
+                ban_reason: banned ? reason.trim() || null : null,
+              }
             : p,
         ),
       );
@@ -82,10 +107,13 @@ export default function DoorList({
               type="button"
               className={styles.chip}
               aria-pressed={filter === f}
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                setFilter(f);
+                setLimit(PAGE);
+              }}
             >
               {LABELS[f]}
-              <span>{count(f)}</span>
+              <span>{counts[f]}</span>
             </button>
           ))}
         </div>
@@ -110,7 +138,7 @@ export default function DoorList({
         <p className={`paper ${styles.empty}`}>Nobody found.</p>
       ) : (
         <ul className={styles.list}>
-          {results.map((p) => (
+          {shown.map((p) => (
             <li
               key={p.id}
               className={styles.row}
@@ -136,6 +164,16 @@ export default function DoorList({
             </li>
           ))}
         </ul>
+      )}
+
+      {results.length > limit && (
+        <button
+          type="button"
+          className={styles.more}
+          onClick={() => setLimit((n) => n + PAGE)}
+        >
+          Show more ({results.length - limit} left)
+        </button>
       )}
 
       {selected && (

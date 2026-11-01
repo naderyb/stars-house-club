@@ -141,6 +141,25 @@
     text-align: center;
   }
 
+  .more {
+    min-height: 52px;
+    padding: 0 1.4rem;
+    justify-self: center;
+    font: 800 0.95rem var(--font-body);
+    color: var(--ink);
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: var(--wobble);
+    box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .more:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+
 /* the name is now a button: tap it to open the person's popup */
 .who {
   min-height: 44px;

@@ -12,37 +12,46 @@ interface Props {
   onClose: () => void;
 }
 
+/** most results drawn at once: typing more narrows it down */
+const MAX = 30;
+
 const fold = (value: string) =>
   value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-export default function DoorSearchModal({
-  people,
-  onSelect,
-  onClose,
-}: Props) {
+export default function DoorSearchModal({ people, onSelect, onClose }: Props) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const normalizedQuery = fold(query.trim());
 
+  // built once: everyone's searchable text, so typing stays instant
+  const index = useMemo(
+    () =>
+      people.map((person) => ({
+        person,
+        text: fold(
+          [person.full_name, person.stage_name, person.email, person.instagram]
+            .filter(Boolean)
+            .join(" "),
+        ),
+        digits: person.phone.replace(/\D/g, ""),
+      })),
+    [people],
+  );
+
   const results = useMemo(() => {
     const digits = query.replace(/\D/g, "").replace(/^0+/, "");
-
-    return people.filter((person) => {
-      if (!normalizedQuery) return true;
-      const text = fold(
-        [person.full_name, person.stage_name, person.email, person.instagram]
-          .filter(Boolean)
-          .join(" "),
-      );
-      const phoneHit =
-        digits.length >= 4 &&
-        person.phone.replace(/\D/g, "").includes(digits);
-      return text.includes(normalizedQuery) || phoneHit;
-    });
-  }, [normalizedQuery, people, query]);
+    return index
+      .filter(
+        (entry) =>
+          !normalizedQuery ||
+          entry.text.includes(normalizedQuery) ||
+          (digits.length >= 4 && entry.digits.includes(digits)),
+      )
+      .map((entry) => entry.person);
+  }, [index, normalizedQuery, query]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -90,7 +99,7 @@ export default function DoorSearchModal({
           {results.length === 0 ? (
             <p className={styles.empty}>Nobody found.</p>
           ) : (
-            results.map((person) => (
+            results.slice(0, MAX).map((person) => (
               <button
                 key={person.id}
                 type="button"
@@ -113,6 +122,11 @@ export default function DoorSearchModal({
                 </span>
               </button>
             ))
+          )}
+          {results.length > MAX && (
+            <p className={styles.empty}>
+              Showing the first {MAX}. Keep typing to narrow it down.
+            </p>
           )}
         </div>
       </section>
