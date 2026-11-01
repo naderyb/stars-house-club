@@ -108,17 +108,26 @@ export default function TabsBoard({
 
     const run = queue.current.then(async () => {
       let result: Record<string, unknown> | null = null;
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 15_000);
       try {
         const res = await fetch("/api/admin/tabs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
+          signal: controller.signal,
         });
         const data = await res.json().catch(() => null);
         if (res.ok) result = data ?? {};
         else setError(data?.message ?? "Something went wrong.");
-      } catch {
-        setError("Network problem. Please try again.");
+      } catch (err) {
+        setError(
+          err instanceof DOMException && err.name === "AbortError"
+            ? "The connection is too slow. Your last tap may not have been saved: check the tab."
+            : "Network problem. Please try again.",
+        );
+      } finally {
+        window.clearTimeout(timer);
       }
       pending.current -= 1;
       if (pending.current === 0) setSaving(false);
