@@ -11,13 +11,6 @@ interface Props {
   sales: TodaySale[];
 }
 
-const timeFmt = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Africa/Algiers",
-  hour: "2-digit",
-  minute: "2-digit",
-  hourCycle: "h23",
-});
-
 export default function StatsTabs({ overview, sales }: Props) {
   const [active, setActive] = useState<"overview" | "sales">("overview");
 
@@ -63,14 +56,15 @@ export default function StatsTabs({ overview, sales }: Props) {
               {sales.map((sale) => (
                 <li key={sale.id} className={extra.saleRow}>
                   <span>
-                    <strong>{sale.itemName}</strong>
+                    <strong>{sale.qty} × {sale.itemName}</strong>
                     <small>
-                      {sale.qty > 1 ? `${sale.qty} × ` : ""}
-                      {sale.tabName} ·{" "}
-                      {timeFmt.format(new Date(sale.paidAt))}
+                      {formatPrice(sale.unitPrice)} each
                     </small>
                   </span>
-                  <strong>{formatPrice(sale.total)}</strong>
+                  <strong>
+                    {formatPrice(sale.unitPrice)} × {sale.qty} ={" "}
+                    {formatPrice(sale.total)}
+                  </strong>
                 </li>
               ))}
             </ul>
