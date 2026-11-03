@@ -514,7 +514,7 @@ export default function TabsBoard({
                       aria-label={`Status: ${state}`}
                     >
                       {state === "owed"
-                        ? "Owed"
+                        ? "Unpaid"
                         : state === "paid"
                           ? "Paid"
                           : "Empty"}
