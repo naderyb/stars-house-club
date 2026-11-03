@@ -508,7 +508,18 @@ export default function TabsBoard({
                         setPayPart(null);
                       }}
                     >
-                      <strong>{label(t)}</strong>
+                    <span
+                      className={extra.statusTag}
+                      data-status={state}
+                      aria-label={`Status: ${state}`}
+                    >
+                      {state === "owed"
+                        ? "Owed"
+                        : state === "paid"
+                          ? "Paid"
+                          : "Empty"}
+                    </span>
+                    <strong>{label(t)}</strong>
                       <span>
                         {state === "owed"
                           ? formatPrice(tabOwed)
