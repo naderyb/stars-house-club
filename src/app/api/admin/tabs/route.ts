@@ -43,7 +43,16 @@ const bodySchema = z.discriminatedUnion("action", [
     action: z.literal("payItems"),
     itemIds: z.array(id).min(1).max(100),
   }),
+  z.object({
+    action: z.literal("payPart"),
+    tabId: id,
+    items: z
+      .array(z.object({ itemId: id, qty: z.number().int().min(1).max(99) }))
+      .min(1)
+      .max(100),
+  }),
   z.object({ action: z.literal("closeTab"), tabId: id }),
+  z.object({ action: z.literal("undoItem"), itemId: id }),
   z.object({ action: z.literal("undoPay"), tabId: id }),
 ]);
 
@@ -58,7 +67,9 @@ const WHO: Record<Action, readonly Role[]> = {
   setQty: CAN.takeOrders,
   payTabs: CAN.pay,
   payItems: CAN.pay,
+  payPart: CAN.pay,
   closeTab: CAN.pay,
+  undoItem: ["admin", "cashier"],
   undoPay: ["admin"],
 };
 
@@ -269,6 +280,17 @@ export async function POST(req: Request) {
         break;
       }
 
+      case "payPart": {
+        const { data, error } = await supabase.rpc("pay_tab_items", {
+          p_tab_id: body.tabId,
+          p_items: body.items,
+          p_paid_by: session.username,
+        });
+        if (error) throw error;
+        result = (data ?? {}) as Record<string, unknown>;
+        break;
+      }
+
       case "closeTab": {
         const { data: owed, error: owedError } = await supabase
           .from("tab_items")
@@ -289,6 +311,15 @@ export async function POST(req: Request) {
           .select("id");
         if (error) throw error;
         if (!data || data.length === 0) return fail("Tab not found.", 404);
+        break;
+      }
+
+      case "undoItem": {
+        const { data, error } = await supabase.rpc("undo_tab_item_payment", {
+          p_item_id: body.itemId,
+        });
+        if (error) throw error;
+        result = (data ?? {}) as Record<string, unknown>;
         break;
       }
 
