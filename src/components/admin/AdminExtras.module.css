@@ -470,6 +470,68 @@
   background: #b9efc8;
 }
 
+.statusTag[data-status="owed"] {
+  background: var(--yellow);
+}
+
+.statTabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.statTab {
+  flex: 1;
+  min-height: 46px;
+  font: 800 0.9rem var(--font-body);
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.statTab[aria-selected="true"] {
+  background: var(--yellow);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.statTab span {
+  display: inline-block;
+  min-width: 1.5rem;
+  margin-left: 0.25rem;
+  color: var(--cream);
+  background: var(--ink);
+  border-radius: 999px;
+}
+
+.salesList {
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.saleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.8rem;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+}
+
+.saleRow span {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.saleRow small {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
 .paidBanner {
   font: 800 0.95rem var(--font-body);
   background: #b9efc8;
