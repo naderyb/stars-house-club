@@ -261,6 +261,52 @@
   gap: 0.5rem;
 }
 
+.partStepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0 0.35rem;
+  font-weight: 800;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+}
+
+.partStepper button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font: 800 1.1rem var(--font-body);
+  color: var(--ink);
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.partStepper button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.partBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  border-radius: var(--wobble-soft);
+}
+
+.partBar strong {
+  margin-right: auto;
+  font: 400 1.15rem var(--font-display);
+}
+
 .rename {
   display: flex;
   flex-wrap: wrap;
