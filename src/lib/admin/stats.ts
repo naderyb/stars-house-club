@@ -50,38 +50,32 @@ export async function getTodayTotal() {
 
 export interface TodaySale {
   id: string;
-  tabName: string;
   itemName: string;
   qty: number;
+  unitPrice: number;
   total: number;
-  paidAt: string;
 }
 
 export async function getTodaySales(): Promise<TodaySale[]> {
   const rows = await paidItemsSince(todayStartIso());
-  const tabIds = Array.from(new Set(rows.map((row) => row.tab_id)));
-  if (tabIds.length === 0) return [];
-
-  const supabase = getServiceClient();
-  const { data, error } = await supabase
-    .from("tabs")
-    .select("id, name")
-    .in("id", tabIds);
-  if (error) throw error;
-
-  const names = new Map(
-    (data ?? []).map((tab) => [tab.id as string, tab.name as string]),
-  );
-  return rows
-    .map((row) => ({
-      id: row.id,
-      tabName: names.get(row.tab_id) ?? "Unnamed tab",
-      itemName: row.name,
-      qty: row.qty,
-      total: row.price * row.qty,
-      paidAt: row.paid_at,
-    }))
-    .sort((a, b) => b.paidAt.localeCompare(a.paidAt));
+  const grouped = new Map<string, TodaySale>();
+  for (const row of rows) {
+    const key = `${row.name.trim().toLowerCase()}|${row.price}`;
+    const existing = grouped.get(key);
+    if (existing) {
+      existing.qty += row.qty;
+      existing.total += row.price * row.qty;
+    } else {
+      grouped.set(key, {
+        id: key,
+        itemName: row.name,
+        qty: row.qty,
+        unitPrice: row.price,
+        total: row.price * row.qty,
+      });
+    }
+  }
+  return Array.from(grouped.values()).sort((a, b) => b.total - a.total);
 }
 
 export interface DayTotal {
