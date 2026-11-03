@@ -12,6 +12,7 @@ export const todayStartIso = () =>
   new Date(startOfDay(dayKeyOf(Date.now()))).toISOString();
 
 interface PaidRow {
+  id: string;
   tab_id: string;
   name: string;
   price: number;
@@ -29,7 +30,7 @@ async function paidItemsSince(sinceIso: string): Promise<PaidRow[]> {
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabase
       .from("tab_items")
-      .select("tab_id, name, price, qty, paid_at")
+      .select("id, tab_id, name, price, qty, paid_at")
       .not("paid_at", "is", null)
       .gte("paid_at", sinceIso)
       .order("paid_at")
@@ -45,6 +46,42 @@ async function paidItemsSince(sinceIso: string): Promise<PaidRow[]> {
 export async function getTodayTotal() {
   const rows = await paidItemsSince(todayStartIso());
   return rows.reduce((sum, r) => sum + r.price * r.qty, 0);
+}
+
+export interface TodaySale {
+  id: string;
+  tabName: string;
+  itemName: string;
+  qty: number;
+  total: number;
+  paidAt: string;
+}
+
+export async function getTodaySales(): Promise<TodaySale[]> {
+  const rows = await paidItemsSince(todayStartIso());
+  const tabIds = Array.from(new Set(rows.map((row) => row.tab_id)));
+  if (tabIds.length === 0) return [];
+
+  const supabase = getServiceClient();
+  const { data, error } = await supabase
+    .from("tabs")
+    .select("id, name")
+    .in("id", tabIds);
+  if (error) throw error;
+
+  const names = new Map(
+    (data ?? []).map((tab) => [tab.id as string, tab.name as string]),
+  );
+  return rows
+    .map((row) => ({
+      id: row.id,
+      tabName: names.get(row.tab_id) ?? "Unnamed tab",
+      itemName: row.name,
+      qty: row.qty,
+      total: row.price * row.qty,
+      paidAt: row.paid_at,
+    }))
+    .sort((a, b) => b.paidAt.localeCompare(a.paidAt));
 }
 
 export interface DayTotal {
