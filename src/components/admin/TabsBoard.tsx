@@ -58,6 +58,8 @@ type SortMode = "newest" | "oldest" | "az";
 const tabState = (t: Tab) =>
   t.items.length === 0 ? "empty" : unpaidTotal(t.items) > 0 ? "owed" : "paid";
 
+const hasPaidItems = (t: Tab) => t.items.some((item) => item.paid_at !== null);
+
 interface Confirmation {
   title: string;
   message: string;
@@ -79,6 +81,7 @@ export default function TabsBoard({
   const canTake = allowed(CAN.takeOrders);
   const canPay = allowed(CAN.pay);
   const isAdmin = role === "admin";
+  const canUndoItem = isAdmin || role === "cashier";
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
@@ -92,6 +95,10 @@ export default function TabsBoard({
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
+  const [payPart, setPayPart] = useState<{
+    tabId: string;
+    quantities: Record<string, number>;
+  } | null>(null);
 
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
@@ -171,12 +178,12 @@ export default function TabsBoard({
       : t.name;
 
   const unpaidCount = tabs.filter((t) => tabState(t) === "owed").length;
-  const paidCount = tabs.filter((t) => tabState(t) === "paid").length;
+  const paidCount = tabs.filter(hasPaidItems).length;
 
   const filteredTabs = [...tabs]
     .filter((t) => {
       if (payFilter === "unpaid" && tabState(t) !== "owed") return false;
-      if (payFilter === "paid" && tabState(t) !== "paid") return false;
+      if (payFilter === "paid" && !hasPaidItems(t)) return false;
       return !q || norm(t.name).includes(q);
     })
     .sort((a, b) =>
@@ -208,6 +215,14 @@ export default function TabsBoard({
   const owed = selected ? unpaidTotal(selected.items) : 0;
   const alreadyPaid = selected ? paidTotal(selected.items) : 0;
   const hasPaidLines = !!selected?.items.some((i) => i.paid_at);
+  const payingPartItems = Object.entries(payPart?.quantities ?? {}).filter(
+    ([, qty]) => qty > 0,
+  );
+  const payingPartQty = payingPartItems.reduce((sum, [, qty]) => sum + qty, 0);
+  const payingPartTotal = payingPartItems.reduce((sum, [itemId, qty]) => {
+    const item = selected?.items.find((candidate) => candidate.id === itemId);
+    return sum + (item ? item.price * qty : 0);
+  }, 0);
 
   /* ---------- actions ---------- */
   const openTab = async (e: FormEvent) => {
@@ -285,6 +300,46 @@ export default function TabsBoard({
       confirmLabel: "Mark as paid",
       action: () => {
         send({ action: "payItems", itemIds: [item.id] });
+      },
+    });
+  };
+
+  const startPayPart = (tab: Tab, item?: TabItem) => {
+    const quantities: Record<string, number> = {};
+    if (item) quantities[item.id] = 1;
+    setPayPart({ tabId: tab.id, quantities });
+  };
+
+  const setPartQty = (item: TabItem, qty: number) => {
+    setPayPart((current) => {
+      if (!current) return current;
+      const quantities = { ...current.quantities };
+      if (qty > 0) quantities[item.id] = Math.min(item.qty, qty);
+      else delete quantities[item.id];
+      return { ...current, quantities };
+    });
+  };
+
+  const paySelectedPart = (tab: Tab) => {
+    const items = Object.entries(payPart?.quantities ?? {})
+      .filter(([, qty]) => qty > 0)
+      .map(([itemId, qty]) => ({ itemId, qty }));
+    if (items.length === 0) {
+      setError("Choose at least one item to pay.");
+      return;
+    }
+    const total = items.reduce((sum, entry) => {
+      const item = tab.items.find((candidate) => candidate.id === entry.itemId);
+      return sum + (item ? item.price * entry.qty : 0);
+    }, 0);
+    setConfirmation({
+      title: "Mark selected items as paid?",
+      message: `${label(tab)}: ${formatPrice(total)} will be paid. The tab stays open.`,
+      confirmLabel: "Mark as paid",
+      action: () => {
+        send({ action: "payPart", tabId: tab.id, items }).then((ok) => {
+          if (ok) setPayPart(null);
+        });
       },
     });
   };
@@ -450,6 +505,7 @@ export default function TabsBoard({
                         setRenaming(false);
                         setFormError("");
                         setPicking(false);
+                        setPayPart(null);
                       }}
                     >
                       <strong>{label(t)}</strong>
@@ -620,68 +676,138 @@ export default function TabsBoard({
             <p className={tabStyles.sub}>Nothing on this tab yet.</p>
           ) : (
             <ul className={extra.lines}>
-              {selected.items.map((i) => (
-                <li
-                  key={i.id}
-                  className={`${extra.line} ${i.paid_at ? tabStyles.paidLine : ""}`}
-                >
-                  <span className={extra.lineName}>
-                    {i.name}
-                    {i.paid_at && (
-                      <span className={tabStyles.badge} data-tone="paid">
-                        paid
-                      </span>
-                    )}{" "}
-                    <small>
-                      {formatPrice(i.price)}
-                      {i.qty > 1 ? ` each × ${i.qty}` : ""}
-                      {" · "}
-                      {timeFmt.format(new Date(i.created_at))}
-                    </small>
-                  </span>
-                  <span className={extra.lineTotal}>
-                    {formatPrice(lineTotal(i))}
-                  </span>
+              {selected.items
+                .filter((i) => !i.paid_at)
+                .map((i) => (
+                  <li key={i.id} className={extra.line}>
+                    <span className={extra.lineName}>
+                      {i.name}
+                      <small>
+                        {formatPrice(i.price)}
+                        {i.qty > 1 ? ` each × ${i.qty}` : ""}
+                        {" · "}
+                        {timeFmt.format(new Date(i.created_at))}
+                      </small>
+                    </span>
+                    <span className={extra.lineTotal}>
+                      {formatPrice(lineTotal(i))}
+                    </span>
 
-                  {!i.paid_at && (canTake || canPay) && (
-                    <div className={tabStyles.lineActions}>
-                      {canPay && (
-                        <button
-                          type="button"
-                          className={extra.smallBtn}
-                          onClick={() => payItem(selected, i)}
-                        >
-                          Pay this
-                        </button>
-                      )}
-                      {canTake && (
-                        <div className={extra.stepper}>
+                    {(canTake || canPay) && (
+                      <div className={tabStyles.lineActions}>
+                        {canPay && (
                           <button
                             type="button"
-                            aria-label={
+                            className={extra.smallBtn}
+                            onClick={() =>
                               i.qty === 1
-                                ? `Remove ${i.name}`
-                                : `One less ${i.name}`
+                                ? payItem(selected, i)
+                                : startPayPart(selected, i)
                             }
-                            onClick={() => changeQty(i, i.qty - 1)}
                           >
-                            −
+                            {i.qty === 1 ? "Pay this" : "Pay part"}
                           </button>
-                          <span aria-live="polite">{i.qty}</span>
+                        )}
+                        {canPay && payPart?.tabId === selected.id && (
+                          <div className={tabStyles.partStepper}>
+                            <button
+                              type="button"
+                              aria-label={`Pay one less ${i.name}`}
+                              onClick={() =>
+                                setPartQty(
+                                  i,
+                                  (payPart.quantities[i.id] ?? 0) - 1,
+                                )
+                              }
+                            >
+                              −
+                            </button>
+                            <span aria-live="polite">
+                              {payPart.quantities[i.id] ?? 0} of {i.qty}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={`Pay one more ${i.name}`}
+                              onClick={() =>
+                                setPartQty(
+                                  i,
+                                  (payPart.quantities[i.id] ?? 0) + 1,
+                                )
+                              }
+                              disabled={
+                                (payPart.quantities[i.id] ?? 0) >= i.qty
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                        {canTake && (
+                          <div className={extra.stepper}>
+                            <button
+                              type="button"
+                              aria-label={
+                                i.qty === 1
+                                  ? `Remove ${i.name}`
+                                  : `One less ${i.name}`
+                              }
+                              onClick={() => changeQty(i, i.qty - 1)}
+                            >
+                              −
+                            </button>
+                            <span aria-live="polite">{i.qty}</span>
+                            <button
+                              type="button"
+                              aria-label={`One more ${i.name}`}
+                              onClick={() => changeQty(i, i.qty + 1)}
+                              disabled={i.qty >= 99}
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              {hasPaidLines && (
+                <li className={`${extra.line} ${tabStyles.paidLine}`}>
+                  <span className={extra.lineName}>
+                    Already paid ·{" "}
+                    {selected.items.filter((i) => i.paid_at).length} lines ·{" "}
+                    {formatPrice(alreadyPaid)}
+                  </span>
+                  {canUndoItem && (
+                    <div className={tabStyles.lineActions}>
+                      {selected.items
+                        .filter((i) => i.paid_at)
+                        .map((i) => (
                           <button
+                            key={i.id}
                             type="button"
-                            aria-label={`One more ${i.name}`}
-                            onClick={() => changeQty(i, i.qty + 1)}
-                            disabled={i.qty >= 99}
+                            className={extra.smallBtn}
+                            onClick={() =>
+                              setConfirmation({
+                                title: "Undo this payment?",
+                                message: `${i.name}: ${formatPrice(
+                                  lineTotal(i),
+                                )} will be added back to the unpaid items.`,
+                                confirmLabel: "Undo",
+                                action: () =>
+                                  send({
+                                    action: "undoItem",
+                                    itemId: i.id,
+                                  }),
+                              })
+                            }
                           >
-                            +
+                            Undo {i.name}
                           </button>
-                        </div>
-                      )}
+                        ))}
                     </div>
                   )}
                 </li>
-              ))}
+              )}
             </ul>
           )}
 
@@ -714,6 +840,33 @@ export default function TabsBoard({
 
           {canPay && (
             <div className={styles.formActions}>
+              {payPart?.tabId === selected.id && (
+                <div className={tabStyles.partBar} role="status">
+                  <span>
+                    <strong>
+                      {payingPartQty > 0
+                        ? `Paying now: ${payingPartQty} item${
+                            payingPartQty === 1 ? "" : "s"
+                          } · ${formatPrice(payingPartTotal)}`
+                        : "Choose items"}
+                    </strong>
+                  </span>
+                  <button
+                    type="button"
+                    className={`btn btn--red ${styles.save}`}
+                    onClick={() => paySelectedPart(selected)}
+                  >
+                    Mark as paid
+                  </button>
+                  <button
+                    type="button"
+                    className={extra.smallBtn}
+                    onClick={() => setPayPart(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
               {owed > 0 ? (
                 <button
                   type="button"
