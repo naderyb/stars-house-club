@@ -7,8 +7,8 @@ export const normalizeUsername = (u: string) => u.trim().toLowerCase();
 /** The login you hand over before any admin exists. It only works while the
  *  admins table is empty, and it must be replaced on first sign-in. */
 export const STARTER = {
-  username: process.env.ADMIN_BOOTSTRAP_USER ??,
-  password: process.env.ADMIN_BOOTSTRAP_PASSWORD ??,
+  username: process.env.ADMIN_BOOTSTRAP_USER ?? "",
+  password: process.env.ADMIN_BOOTSTRAP_PASSWORD ?? "",
 };
 
 const STARTER_ENABLED =
