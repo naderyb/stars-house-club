@@ -7,9 +7,12 @@ export const normalizeUsername = (u: string) => u.trim().toLowerCase();
 /** The login you hand over before any admin exists. It only works while the
  *  admins table is empty, and it must be replaced on first sign-in. */
 export const STARTER = {
-  username: process.env.ADMIN_BOOTSTRAP_USER || "stars house",
-  password: process.env.ADMIN_BOOTSTRAP_PASSWORD || "stars house",
+  username: process.env.ADMIN_BOOTSTRAP_USER ??,
+  password: process.env.ADMIN_BOOTSTRAP_PASSWORD ??,
 };
+
+const STARTER_ENABLED =
+  STARTER.username.trim().length >= 3 && STARTER.password.length >= 12;
 
 /** Session id used while the starter login is active (no real account yet) */
 export const STARTER_ID = "starter";
@@ -53,7 +56,7 @@ export async function checkLogin(
     .select("id", { count: "exact", head: true });
   if (countError) throw countError;
 
-  if (count === 0) {
+  if (count === 0 && STARTER_ENABLED) {
     const userOk = safeEqual(name, normalizeUsername(STARTER.username));
     const passOk = safeEqual(password, STARTER.password);
     return userOk && passOk
