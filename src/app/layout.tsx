@@ -36,8 +36,7 @@ export const metadata: Metadata = {
       { url: "/images/16_16.png", sizes: "16x16", type: "image/png" },
       { url: "/images/32_32.png", sizes: "32x32", type: "image/png" },
     ],
-    // apple-touch-icon comes from src/app/apple-icon.png (Next file convention:
-    // hashed URL, so iOS can't serve a stale cached icon).
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
   appleWebApp: {
     capable: true,
