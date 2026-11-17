@@ -62,6 +62,7 @@ export const ACCESS = {
 export const CAN = {
   takeOrders: ["admin", "manager", "waiter"],
   pay: ["admin", "manager", "cashier"],
+  seeRecentlyPaid: ACCESS.orders,
 } as const satisfies Record<string, readonly Role[]>;
 
 export const navLinks: {
