@@ -13,12 +13,15 @@ export default async function AdminOrdersPage() {
 
   const isAdmin = session.role === "admin";
   const canTake = (CAN.takeOrders as readonly Role[]).includes(session.role);
+  const canSeeRecentlyPaid = (CAN.seeRecentlyPaid as readonly Role[]).includes(
+    session.role,
+  );
 
-  // money figures are only fetched for admins: the cashier and waiter never receive them
+  // earnings are only fetched for admins; managers can see the paid-client list
   const [tabs, menu, recentlyPaid, todayTotal] = await Promise.all([
     getOpenTabs(),
     canTake ? getMenuChoices() : Promise.resolve([]),
-    isAdmin ? getRecentlyClosedTabs() : Promise.resolve([]),
+    canSeeRecentlyPaid ? getRecentlyClosedTabs() : Promise.resolve([]),
     isAdmin ? getTodayTotal() : Promise.resolve(null),
   ]);
 
