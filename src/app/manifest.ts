@@ -11,7 +11,7 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#101522",
     icons: [
       {
-        src: "/images/180_180.png",
+        src: "/apple-touch-icon.png",
         sizes: "180x180",
         type: "image/png",
         purpose: "any",
