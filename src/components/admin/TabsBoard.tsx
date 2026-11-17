@@ -81,6 +81,7 @@ export default function TabsBoard({
   const canTake = allowed(CAN.takeOrders);
   const canPay = allowed(CAN.pay);
   const isAdmin = role === "admin";
+  const canSeeRecentlyPaid = allowed(CAN.seeRecentlyPaid);
   const canUndoItem = isAdmin || role === "cashier";
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -89,6 +90,7 @@ export default function TabsBoard({
   const [picking, setPicking] = useState(false);
   const [page, setPage] = useState(0);
   const [tabQuery, setTabQuery] = useState("");
+  const [recentPaidQuery, setRecentPaidQuery] = useState("");
   const [payFilter, setPayFilter] = useState<PayFilter>("all");
   const [sort, setSort] = useState<SortMode>("newest");
   const [formError, setFormError] = useState("");
@@ -166,6 +168,10 @@ export default function TabsBoard({
   /* ---------- derived ---------- */
   const tabIds = new Set(tabs.map((t) => t.id));
   const q = norm(tabQuery.trim());
+  const recentPaidQ = norm(recentPaidQuery.trim());
+  const filteredRecentlyPaid = recentlyPaid.filter(
+    (payment) => !recentPaidQ || norm(payment.name).includes(recentPaidQ),
+  );
   // two people can share a name: add the opening time wherever the name shows
   const nameCount = new Map<string, number>();
   for (const t of tabs) {
@@ -911,12 +917,23 @@ export default function TabsBoard({
         />
       )}
 
-      {/* ---- admin only: today's settled tabs, to undo a mistake ---- */}
-      {isAdmin && recentlyPaid.length > 0 && (
+      {/* Today's settled tabs; only admins can undo a payment. */}
+      {canSeeRecentlyPaid && recentlyPaid.length > 0 && (
         <section className={`paper ${styles.card}`} aria-label="Recently paid">
           <h2 className={styles.catTitle}>Recently paid</h2>
+          <div className={tabStyles.searchRow}>
+            <input
+              type="search"
+              className={tabStyles.tabSearch}
+              placeholder="Find a paid client..."
+              value={recentPaidQuery}
+              onChange={(event) => setRecentPaidQuery(event.target.value)}
+              aria-label="Find a recently paid client"
+              autoComplete="off"
+            />
+          </div>
           <ul className={extra.lines}>
-            {recentlyPaid.map((p) => (
+            {filteredRecentlyPaid.map((p) => (
               <li key={p.id} className={extra.paidRow}>
                 <span>
                   <span className={extra.statusTag} data-status="paid">
@@ -925,16 +942,21 @@ export default function TabsBoard({
                   {timeFmt.format(new Date(p.closed_at))} · {p.name} ·{" "}
                   {formatPrice(p.total)}
                 </span>
-                <button
-                  type="button"
-                  className={extra.smallBtn}
-                  onClick={() => undoPay(p)}
-                >
-                  Undo
-                </button>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    className={extra.smallBtn}
+                    onClick={() => undoPay(p)}
+                  >
+                    Undo
+                  </button>
+                )}
               </li>
             ))}
           </ul>
+          {filteredRecentlyPaid.length === 0 && (
+            <p className={tabStyles.sub}>No recently paid client matches.</p>
+          )}
         </section>
       )}
     </div>
