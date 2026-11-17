@@ -1,0 +1,18 @@
+export function GET() {
+  return Response.json(
+    {
+      name: "Stars House Admin",
+      short_name: "Stars Admin",
+      start_url: "/admin",
+      scope: "/admin",
+      display: "standalone",
+      background_color: "#101522",
+      theme_color: "#101522",
+      icons: [
+        { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+        { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+    },
+    { headers: { "Content-Type": "application/manifest+json" } },
+  );
+}
